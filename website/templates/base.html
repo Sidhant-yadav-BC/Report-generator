@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <title> {% block title%}{% endblock title%} </title>
+    {% block head%}{% endblock head%}
+
+    <style>
+        /* Styling for flashing messages */
+        .flash-messages {
+            margin-bottom: 15px; /* Spacing between messages */
+        }
+
+        .flash-message {
+            padding: 10px; /* Padding around the message */
+            border-radius: 4px; /* Rounded corners */
+            font-size: 16px; /* Font size */
+            color: white; /* White text color */
+        }
+
+        /* Styling for error messages */
+        .error-message {
+            background-color: #FF5733; /* Red background color for errors */
+        }
+
+        /* Styling for success messages */
+        .success-message {
+            background-color: #4CAF50; /* Green background color for success */
+        }
+    </style>
+    
+</head>
+<body>
+
+    {% with messages = get_flashed_messages(with_categories=true)%} 
+    {% if messages%}
+        <div class="flash-messages">
+            {% for message in messages %}
+                <div class="flash-message {% if 'error' in message[0] %}error-message{% elif 'success' in message[0] %}success-message{% endif %}">
+                    {{ message[1] }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% endwith%}
+    
+    {% block body %}{% endblock body %}
+
+
+    <script>
+        // Automatically remove flashed messages after 3 seconds (adjust the duration as needed)
+        document.addEventListener('DOMContentLoaded', function () {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function (message) {
+                setTimeout(function () {
+                    message.remove();
+                }, 3000); // 3000 milliseconds (3 seconds)
+            });
+        });
+        </script>
+        
+    
+</body>
+</html>

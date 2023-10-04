@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{%block title%}LOG IN{% endblock title%}
+
+{% block body%}
+<div class="container">
+    <h1>Login Page</h1>
+    <form method="POST" action="{{url_for('auth.login')}}">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+    </form>
+</div>
+{% endblock body%}

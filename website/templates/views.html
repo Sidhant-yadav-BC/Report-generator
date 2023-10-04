@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{%block title%}Home page{% endblock title%}
+
+{% block body%}
+   
+    {% if user.is_authenticated %}
+        <p>{{user}}</p>
+    {% endif %}
+
+    <a href="{{url_for('auth.logout')}}">Logout</a>
+
+{% endblock body%}

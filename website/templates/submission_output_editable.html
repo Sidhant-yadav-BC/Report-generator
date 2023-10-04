@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}SIGN_UP{% endblock title %}
+
+{% block body %}
+<h1>Submission Output (Editable)</h1>
+<form method="POST" action="{{ url_for('views.update_submission') }}">
+    <label>Your Submission:</label>
+    <br><br>
+    <label>Input</label>
+    <textarea name="input" id="input" contenteditable="true">{{ input }}</textarea><br><br>
+    <br><br>
+    <label>Output</label>
+    <textarea name="output" id="output" contenteditable="true">{{ output }}</textarea><br><br>
+    <br><br>
+    <label>Business Update</label>
+    <textarea name="bu" id="bu" contenteditable="true">{{ business_update }}</textarea><br><br>
+    <input type="submit" value="Update Submission">
+</form>
+<a href="/">Back to Home</a>
+{% endblock body %}
