@@ -7,7 +7,7 @@ certifi==2023.7.22
 charset-normalizer==3.2.0
 click==8.1.7
 et-xmlfile==1.1.0
-Flask==2.3.3
+Flask==3.0.0
 Flask-Login==0.6.2
 Flask-SQLAlchemy==3.1.1
 frozenlist==1.4.0
@@ -26,7 +26,7 @@ SQLAlchemy==2.0.21
 tqdm==4.66.1
 typing_extensions==4.8.0
 urllib3==2.0.5
-Werkzeug==2.3.7
+Werkzeug==3.0.0
 XlsxWriter==3.1.5
 yarl==1.9.2
 zipp==3.17.0
