@@ -71,7 +71,7 @@ def signup():
             login_user(new_user, remember=True)
             
             flash("Account created successfully. You are now logged in.", category='success')
-            return redirect(url_for('views.home'))
+            return redirect(url_for('views.user_form'))
     
     return render_template('sign_up.html')
 
