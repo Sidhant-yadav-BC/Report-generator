@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Portfolio Details</title>
+    <link rel="stylesheet" href="static/portfolio_details.css">
+
+</head>
+<body>
+    <h1></h1>
+    <form method="POST" action="/updated_portfolio_details">
+        <textarea rows="10" cols="50" name="portfolio-textarea">{{ portfolio_details }}</textarea>
+        <br>
+        <button type="submit">Update Portfolio Details</button>
+    </form>
+</body>
+</html>
