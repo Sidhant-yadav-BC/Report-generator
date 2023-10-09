@@ -8,6 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
 from . import db
+from datetime import datetime
 
 views = Blueprint('views', __name__)
 
@@ -27,6 +28,17 @@ openai.api_key = api_key
 portfolio = ''
 service = ''
 gpt_response = ''
+
+
+# landing page for normal user
+@views.route('/home')
+@views.route('/')
+@views.route("/user_form", methods=['POST', 'GET'])
+@login_required
+def user_form():
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))  # Redirect to the login page
+    return render_template('user_form.html', username=current_user.username)
 
 
 # Define the route for processing the form submission
@@ -80,6 +92,7 @@ def process_form():
     session['sub_project']= request.form['sub_project']
     session['team']= request.form['team']
     session['date'] = request.form['selected_date']
+    session['progress'] = request.form['progress']
 
     # Redirect to the submission editing page
     return redirect(url_for('views.submission_output_editable'))
@@ -104,7 +117,7 @@ def submission_output_editable():
     output_section = output_match.group(1).strip() if output_match else ""
     business_update_section = business_update_match.group(1).strip() if business_update_match else ""
 
-    return render_template('submission_output_editable.html', submission=session.get('submission', ''), username=session.get('username', ''), input=input_section, output=output_section, business_update=business_update_section)
+    return render_template('submission_output_editable.html', submission=session.get('submission', ''), username=current_user.username, input=input_section, output=output_section, business_update=business_update_section)
 
 # Define the route for updating the submission
 @login_required
@@ -134,12 +147,12 @@ def update_submission():
     
     # Assuming the following form fields are present: 'input', 'output', 'bu', 'portfolio', 'service'
 
-    date = session.get('date', )
+   
+    date_str = session.get('date', '')
+    date = datetime.strptime(date_str, '%Y-%m-%d') #refactoring data fromat as SQLite DateTime type only accepts Python datetime
     sub_project = session.get('sub_project', '')
     teammates = session.get('team', '')
-    input_data = input_data
-    output_data = output_data
-    business_update = business_update
+
     
 
     try:
@@ -151,9 +164,9 @@ def update_submission():
             service=service,
             subtopics=sub_project,
             teammates=teammates,
-            input=input_data,
-            output=output_data,
-            update=business_update
+            input=input_section,
+            output=output_section,
+            update=business_update_section
         )
 
         # Add the instance to the session and commit the changes
@@ -168,22 +181,11 @@ def update_submission():
         return redirect(url_for('auth.logout'))
 
     except SQLAlchemyError as e:
-        # Handle exceptions (print, log, or handle appropriately)
-        flash("Update failed",category='error')
-        db.session.rollback()
+            # Handle exceptions (print, log, or handle appropriately)
+            flash("Update failed",category='error')
+            db.session.rollback()
 
-        # You might want to add a flash message or redirect to an error page
-        return redirect(url_for('auth.logout'))
+            # You might want to add a flash message or redirect to an error page
+            return redirect(url_for('auth.logout'))
 
 
-
-# after login , normal user 
-
-@views.route('/home')
-@views.route('/')
-@views.route("/user_form", methods=['POST', 'GET'])
-@login_required
-def user_form():
-    if not current_user.is_authenticated:
-        return redirect(url_for('auth.login'))  # Redirect to the login page
-    return render_template('user_form.html', username=current_user.username)
