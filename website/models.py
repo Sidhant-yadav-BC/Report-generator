@@ -5,7 +5,7 @@ from flask_login import UserMixin
 class BusinessUpdates(db.Model):
     update_id = db.Column(db.Integer, primary_key=True)
     user_id= db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    date = db.Column(db.DateTime(timezone=False))
+    date = db.Column(db.Date)
     portfolio = db.Column(db.String(200))
     service = db.Column(db.String(100))
     subtopics = db.Column(db.String(100))
