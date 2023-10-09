@@ -10,6 +10,7 @@ from flask_login import login_required, current_user
 from . import db
 from datetime import datetime
 
+
 views = Blueprint('views', __name__)
 
 dotenv.load_dotenv()
@@ -31,8 +32,8 @@ gpt_response = ''
 
 
 # landing page for normal user
-@views.route('/home')
-@views.route('/')
+@views.route('/home', methods=['POST', 'GET'])
+@views.route('/', methods=['POST', 'GET'])
 @views.route("/user_form", methods=['POST', 'GET'])
 @login_required
 def user_form():
