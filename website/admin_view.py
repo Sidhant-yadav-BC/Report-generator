@@ -1,6 +1,6 @@
 # admin_view.py
 
-from flask import Blueprint, render_template, request, session, render_template_string, send_file
+from flask import Blueprint,redirect, url_for, render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates, Users
 from . import db
@@ -13,9 +13,13 @@ import os
 admin_view = Blueprint('admin_view', __name__)
 
 @admin_view.route('/admin_landing')
+@login_required
 def admin_landing():
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))  # Redirect to the login page
     return render_template('admin_landing.html')
 
+@login_required
 @admin_view.route('/portfolio_details', methods=['GET', 'POST'])
 def portfolio_details():
     todate = request.form['toDate']
@@ -55,6 +59,7 @@ def portfolio_details():
 
     return render_template_string(render_template('portfolio_details.html', portfolio_details=portfolio_details))
 
+@login_required
 @admin_view.route('/updated_portfolio_details', methods=['GET', 'POST'])
 def update_portfolio_details():
     portfolio_details = request.form.get('portfolio-textarea')
@@ -62,6 +67,7 @@ def update_portfolio_details():
 
     return render_template_string(render_template('updated_portfolio_details.html', portfolio_details=portfolio_details))
 
+@login_required
 @admin_view.route('/download_portfolio_docx', methods=['POST'])
 def download_portfolio_docx():
     portfolio_details = session.get('portfolio-textarea', '')
@@ -80,6 +86,8 @@ def download_portfolio_docx():
         download_name='portfolio_details.docx',
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
+
+@login_required
 @admin_view.route('/excel', methods=['POST'])
 def index():
     todate = request.form['toDate']
@@ -118,6 +126,7 @@ def index():
 
     return render_template('report.html', table_html=table_html)
 
+@login_required
 @admin_view.route('/download_xlsx', methods=['GET', 'POST'])
 def download_xlsx():
     portfolio = session.get('portfolio', '')

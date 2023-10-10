@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from os import path 
 
 
@@ -11,14 +12,24 @@ from os import path
 db = SQLAlchemy()
 DB_NAME = 'database.db'
 
+db = SQLAlchemy()
+DB_NAME = 'database.db'
+
+# SQLAlchemy setup
+Base = declarative_base()
+engine = None  # We'll initialize this later in create_app
+Session = sessionmaker()
+
 
 def create_app():
+    global engine
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'be9e39b38e2d79879653c4ad97888531'
-    
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
-    
+
     db.init_app(app)
+    engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'], echo=True)
+    Session.configure(bind=engine)
 
     from .user_view import user_view
     from .admin_view import admin_view
@@ -43,6 +54,7 @@ def create_app():
 
 def create_database(app):
     if not path.exists('website/'+ DB_NAME):
-         with app.app_context():
+        with app.app_context():
             db.create_all()
+            Base.metadata.create_all(engine)
   
