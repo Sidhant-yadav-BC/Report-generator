@@ -1,6 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
 from os import path 
 
 
@@ -8,6 +10,7 @@ from os import path
 
 db = SQLAlchemy()
 DB_NAME = 'database.db'
+
 
 def create_app():
     app = Flask(__name__)
@@ -17,9 +20,10 @@ def create_app():
     
     db.init_app(app)
 
-    from .views import views
+    from .user_view import user_view
+    from .admin_view import admin_view
     from .auth import auth
-    from .models import Users, BusinessUpdates   
+    from .models import Users
     
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
@@ -29,8 +33,9 @@ def create_app():
     def load_user(id):
         return Users.query.get(int(id))
 
-    app.register_blueprint(views, url_prefix='/')
+    app.register_blueprint(user_view, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(admin_view, url_prefix='/')
     
     create_database(app)
 
@@ -38,5 +43,6 @@ def create_app():
 
 def create_database(app):
     if not path.exists('website/'+ DB_NAME):
-        with app.app_context():
+         with app.app_context():
             db.create_all()
+  

@@ -1,9 +1,15 @@
 {% extends "base.html" %}
-{%block title%}LOG IN{% endblock title%}
+{%block title%}Log In{% endblock title%}
+
+
+{% block head %}
+    <!-- Include your admin-specific CSS file here -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+{% endblock head %}
+
 
 {% block body%}
 <div class="container">
-    <h1>Login Page</h1>
     <form method="POST" action="{{url_for('auth.login')}}">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" required><br><br>

@@ -18,9 +18,9 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 login_user(user, remember=True ) # keeps user logged in 
-                # return redirect(url_for('views.home'))
-                # return render_template('views.user_form.html', username=user.username)
-                return redirect(url_for('views.user_form'))
+                # return redirect(url_for('user_view.home'))
+                # return render_template('user_view.user_form.html', username=user.username)
+                return redirect(url_for('user_view.user_form'))
             else:
                 flash("Wrong username or password. Please try again",category='error')
                 return redirect(url_for('auth.login'))
@@ -44,6 +44,7 @@ def signup():
         email = request.form.get('email')
         username = request.form.get('username')
         password = request.form.get('password')
+        role = request.form.get('role')
         
         # Check if a user with the same username or email already exists
         existing_user = Users.query.filter_by(username=username).first()
@@ -62,7 +63,7 @@ def signup():
             flash('Username must be at least 4 characters long.', category='error')
         else:
             # Create a new user
-            new_user = Users(email=email, username=username, password=generate_password_hash(password, method="sha256"))
+            new_user = Users(email=email, username=username, password=generate_password_hash(password, method="sha256"), role = role)
             
             # Add the user to the database
             db.session.add(new_user)
@@ -72,7 +73,7 @@ def signup():
             login_user(new_user, remember=True)
             
             flash("Account created successfully. You are now logged in.", category='success')
-            return redirect(url_for('views.user_form'))
+            return redirect(url_for('user_view.user_form'))
     
     return render_template('sign_up.html')
 

@@ -3,7 +3,7 @@
 
 {% block body%}
     <h1>Welcome, {{ username }}!</h1>
-    <form method="POST" action="{{url_for('views.process_form')}}" id="report">
+    <form method="POST" action="{{url_for('user_view.process_form')}}" id="report">
         <label for="work">Work you did this week:</label>
         <textarea id="work" name="work" required></textarea><br><br>
         <label for="project">Portfolio:</label>

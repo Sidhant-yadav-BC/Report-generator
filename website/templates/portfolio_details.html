@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{%block title%}Portfolio Details{% endblock title%}
+
+
+{% block head %}
+
+<link rel="stylesheet" href="static/portfolio_details.css">
+{% endblock head %}
+
+
+{% block body%}
+<h1></h1>
+<form method="POST" action="/updated_portfolio_details">
+    <textarea rows="10" cols="50" name="portfolio-textarea">{{ portfolio_details }}</textarea>
+    <br>
+    <button type="submit">Update Portfolio Details</button>
+</form>
+{% endblock body%}

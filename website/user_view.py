@@ -11,7 +11,7 @@ from . import db
 from datetime import datetime
 
 
-views = Blueprint('views', __name__)
+user_view = Blueprint('user_view', __name__)
 
 dotenv.load_dotenv()
 
@@ -32,9 +32,9 @@ gpt_response = ''
 
 
 # landing page for normal user
-@views.route('/home', methods=['POST', 'GET'])
-@views.route('/', methods=['POST', 'GET'])
-@views.route("/user_form", methods=['POST', 'GET'])
+@user_view.route('/home', methods=['POST', 'GET'])
+@user_view.route('/', methods=['POST', 'GET'])
+@user_view.route("/user_form", methods=['POST', 'GET'])
 @login_required
 def user_form():
     if not current_user.is_authenticated:
@@ -43,7 +43,7 @@ def user_form():
 
 
 # Define the route for processing the form submission
-@views.route('/process_form', methods=['POST'])
+@user_view.route('/process_form', methods=['POST'])
 def process_form():
     input = request.form['work']
     portfolio = request.form['project']
@@ -96,11 +96,11 @@ def process_form():
     session['progress'] = request.form['progress']
 
     # Redirect to the submission editing page
-    return redirect(url_for('views.submission_output_editable'))
+    return redirect(url_for('user_view.submission_output_editable'))
 
 # Define the route for the submission editing page
 @login_required
-@views.route('/submission_output_editable')
+@user_view.route('/submission_output_editable')
 def submission_output_editable():
     text = session.get('gpt_response', '')
 
@@ -122,7 +122,7 @@ def submission_output_editable():
 
 # Define the route for updating the submission
 @login_required
-@views.route('/update_submission', methods=['POST'])
+@user_view.route('/update_submission', methods=['POST'])
 def update_submission():
     text = session.get('submission', '')
     portfolio = session.get('portfolio', '')

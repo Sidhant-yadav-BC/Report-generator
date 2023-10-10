@@ -24,6 +24,7 @@ class Users(db.Model, UserMixin):
         return self.user_id
     
     user_id = db.Column(db.Integer, primary_key=True)
+    role = db.Column(db.String(50), nullable=False, default='user', server_default='user')
     username = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{%block title%}Updated Portfolio Details{% endblock title%}
+
+
+{% block head %}
+
+    <link rel="stylesheet" href="static/updated_portfolio_details.css">
+{% endblock head %}
+
+
+{% block body%}
+<h1></h1>
+<textarea rows="10" cols="50" id="portfolio-textarea"  readonly>{{ portfolio_details }}</textarea>
+<br>
+<form action="{{ url_for('admin_view.download_portfolio_docx') }}" method="POST" >
+    <button type="submit"  id='docx_button' class="btn btn-primary">Download Portfolio Details (DOCX)</button>
+</form>
+{% endblock body%}
