@@ -2,14 +2,14 @@
 
 from flask import Blueprint,redirect, url_for, render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
-from .models import BusinessUpdates, Users
+from .models import BusinessUpdates
 from . import db
-import pdfkit
 from docx import Document
 import io
 import pandas as pd
 import tempfile
 import os
+
 admin_view = Blueprint('admin_view', __name__)
 
 @admin_view.route('/admin_landing')

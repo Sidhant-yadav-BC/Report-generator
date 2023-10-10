@@ -20,7 +20,10 @@ def login():
                 login_user(user, remember=True ) # keeps user logged in 
                 # return redirect(url_for('user_view.home'))
                 # return render_template('user_view.user_form.html', username=user.username)
-                return redirect(url_for('user_view.user_form'))
+                if user.role == "admin":
+                    return redirect(url_for('admin_view.admin_landing'))
+                else:
+                    return redirect(url_for('user_view.user_form'))
             else:
                 flash("Wrong username or password. Please try again",category='error')
                 return redirect(url_for('auth.login'))
