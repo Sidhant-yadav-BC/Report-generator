@@ -10,7 +10,7 @@
 
 {% block body%}
 <h1></h1>
-<form method="POST" action="/updated_portfolio_details">
+<form method="POST" action="{{url_for('admin_view.update_portfolio_details')}}">
     <textarea rows="10" cols="50" name="portfolio-textarea">{{ portfolio_details }}</textarea>
     <br>
     <button type="submit">Update Portfolio Details</button>

@@ -46,9 +46,13 @@ def user_form():
 # Define the route for processing the form submission
 @user_view.route('/process_form', methods=['POST'])
 def process_form():
-    input = request.form['work']
+    user_input = request.form['user_input']
+    user_output = request.form['user_output']
     portfolio = request.form['project']
     service = request.form['services']
+    selected_date = request.form['selected_date']
+    progress = request.form['progress']
+    team = request.form['team']
 
     # Use the OpenAI API to generate a response based on user input
     prompts = [
@@ -57,6 +61,7 @@ def process_form():
             'content': """
             You are a professional business report generator. Your task is to create a detailed business report in the following format, which includes sections for input, output, and a business update. Maintain a high level of professionalism in the language and presentation of the report.
 
+            Task done by user is : {user_input}
             Please adhere to the specific format provided below:
 
             INPUT:
@@ -71,7 +76,7 @@ def process_form():
         },
         {
             'role': 'user',
-            'content': f"{input}"
+            'content': f"input from user {user_input} and output from user {user_output} improve it in a business representable way "
         }
     ]
 
@@ -87,14 +92,16 @@ def process_form():
     # gpt_response= input+ " "+ portfolio+ " "+service
 
     # Store the response and other session data
+    
     session['submission'] = gpt_response
     session['gpt_response'] = gpt_response
     session['portfolio'] = portfolio
     session['service'] = service
-    session['sub_project']= request.form['sub_project']
-    session['team']= request.form['team']
-    session['date'] = request.form['selected_date']
-    session['progress'] = request.form['progress']
+    session['selected_date'] = selected_date
+    session['progress'] = progress
+    session['team'] = team
+    session['user_input'] = user_input
+    session['user_output'] = user_output
 
     # Redirect to the submission editing page
     return redirect(url_for('user_view.submission_output_editable'))
@@ -118,8 +125,19 @@ def submission_output_editable():
     input_section = input_match.group(1).strip() if input_match else ""
     output_section = output_match.group(1).strip() if output_match else ""
     business_update_section = business_update_match.group(1).strip() if business_update_match else ""
+    gpt_rep = session.get('submission', '')
+    portfolio = session.get('portfolio', '')
+    service = session.get('service', '')
+    user_input  = session.get('user_input', '')
+    user_output = session.get('user_output', '')
+    date = session.get('selected_date', '')
+    progress = session.get('progress', '')
+    team = session.get('team', '')
 
-    return render_template('submission_output_editable.html', submission=session.get('submission', ''), username=current_user.username, input=input_section, output=output_section, business_update=business_update_section)
+
+    return render_template('submission_output_editable.html', submission=session.get('submission', ''),
+                           username=session.get('username', ''), input=input_section, output=output_section,
+                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output)
 
 # Define the route for updating the submission
 @login_required
@@ -131,28 +149,10 @@ def update_submission():
     input_data = request.form.get('input')
     output_data = request.form.get('output')
     business_update = request.form.get('bu')
-
-    input_pattern = r'INPUT:(.*?)OUTPUT:'
-    output_pattern = r'OUTPUT:(.*?)BUSINESS UPDATE:'
-    business_update_pattern = r'BUSINESS UPDATE:(.*)'
-
-    # Use re.DOTALL to match across multiple lines
-    input_match = re.search(input_pattern, text, re.DOTALL)
-    output_match = re.search(output_pattern, text, re.DOTALL)
-    business_update_match = re.search(business_update_pattern, text, re.DOTALL)
-
-    # Extract the matched content
-    input_section = input_match.group(1).strip() if input_match else ""
-    output_section = output_match.group(1).strip() if output_match else ""
-    business_update_section = business_update_match.group(1).strip() if business_update_match else ""
-
     
-    # Assuming the following form fields are present: 'input', 'output', 'bu', 'portfolio', 'service'
-
-   
-    date_str = session.get('date', '')
+    # Assuming the following form fields are present: 'input', 'output', 'bu', 'portfolio', 'service' 
+    date_str = session.get('selected_date', '')
     date = datetime.strptime(date_str, '%Y-%m-%d') #refactoring data fromat as SQLite DateTime type only accepts Python datetime
-    sub_project = session.get('sub_project', '')
     teammates = session.get('team', '')
 
     
@@ -160,16 +160,19 @@ def update_submission():
     try:
         # Create a new BusinessUpdates instance
         update_entry = BusinessUpdates(
-            user_id=current_user.user_id,
             date = date,
-            portfolio=portfolio,
+            username=current_user.username,
+            user_input= session.get('user_input', ''),
+            user_output=session.get('user_output', ''),
+            business_update=business_update,
             service=service,
-            subtopics=sub_project,
+            portfolio=portfolio,
             teammates=teammates,
-            input=input_section,
-            output=output_section,
-            update=business_update_section
+            progress=session['progress'],
+            ai_input = input_data,
+            ai_output = output_data,
         )
+        
 
         # Add the instance to the session and commit the changes
         db.session.add(update_entry)

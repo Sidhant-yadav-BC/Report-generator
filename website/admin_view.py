@@ -22,16 +22,14 @@ def admin_landing():
 @login_required
 @admin_view.route('/portfolio_details', methods=['GET', 'POST'])
 def portfolio_details():
-    todate = request.form['toDate']
-    session['todate'] = todate
-    fromdate = request.form['fromDate']
-    session['fromdate'] = fromdate
-    portfolio = request.form['project']
-    session['portfolio'] = portfolio
-    service = request.form['services']
-    session['service'] = service
+    
+    fromdate = session.get('fromdate', '')
+    todate = session.get('todate', '')
+    service = session.get('service', '')
+    portfolio = session.get('portfolio', '')
+    
 
-    portfolio_details = ""
+    portfolio_details_list = []  # Create a list to store portfolio details
 
     
     if portfolio == 'all':
@@ -45,19 +43,43 @@ def portfolio_details():
             BusinessUpdates.portfolio.like(portfolio),
             BusinessUpdates.service.like(service)
         ).all()
+    
+    updates_data = []
+    for update in updates:
+        update_data = {
+            "Date": update.date,
+            "Portfolio": update.portfolio,
+            "Service": update.service,
+            "AI_Input": update.ai_input,
+            "AI_Output": update.ai_output
+            # Add other columns as needed
+        }
+        updates_data.append(update_data)
 
-    list1 = list(set(update.portfolio for update in updates))
+    # Convert the list of dictionaries to a pandas DataFrame
+    df = pd.DataFrame(updates_data)
+    portfolio_details = ""
+ 
 
+    list1 = []
+    for name in df["Portfolio"]:
+        if name in list1:
+            continue
+        else:
+            list1.append(name)
+    
+    print(list1)
+
+    finalstr = ""
     for x in list1:
-        portfolio_details += f"\n{x}\n"
-        for update in updates:
-            if x == update.portfolio:
-                portfolio_details += f"""
-                    {update.input}
-                    - {update.output}
-                """
+        finalstr = finalstr + "\n""\n" + x+ "\n"
+        for index, row in df.iterrows():
+            if x == row["Portfolio"]:
+                finalstr += f"""
+        {row['AI_Input']} - {row['AI_Output']}
+    """
 
-    return render_template_string(render_template('portfolio_details.html', portfolio_details=portfolio_details))
+    return render_template_string(render_template('portfolio_details.html', portfolio_details=finalstr))
 
 @login_required
 @admin_view.route('/updated_portfolio_details', methods=['GET', 'POST'])
@@ -89,7 +111,7 @@ def download_portfolio_docx():
 
 @login_required
 @admin_view.route('/excel', methods=['POST'])
-def index():
+def excel():
     todate = request.form['toDate']
     session['todate'] = todate
     fromdate = request.form['fromDate']
@@ -115,11 +137,17 @@ def index():
         ).all()
 
     df = pd.DataFrame([{
-        'date': update.date,
-        'portfolio': update.portfolio,
-        'service': update.service,
-        'input': update.input,
-        'output': update.output
+        'DATE': update.date,
+        'USER': update.username,
+        'USER_INPUT': update.user_input,
+        'USER_OUTPUT': update.user_output,
+        'SERVICE': update.service,
+        'PORTFOLIO': update.portfolio,
+        'PROGRESS': update.progress,
+        'TEAMMATES': update.teammates,
+        'AI-BUSINESS-INPUT': update.ai_input,
+        'AI-BUSINESS-OUTPUT': update.ai_output,
+        'BUSINESS-UPDATE': update.business_update
     } for update in updates])
 
     table_html = df.to_html(classes='table table-bordered table-striped', index=False)
@@ -150,11 +178,17 @@ def download_xlsx():
         ).all()
 
     df = pd.DataFrame([{
-        'date': update.date,
-        'portfolio': update.portfolio,
-        'service': update.service,
-        'input': update.input,
-        'output': update.output
+        'DATE': update.date,
+        'USER': update.username,
+        'USER_INPUT': update.user_input,
+        'USER_OUTPUT': update.user_output,
+        'SERVICE': update.service,
+        'PORTFOLIO': update.portfolio,
+        'PROGRESS': update.progress,
+        'TEAMMATES': update.teammates,
+        'AI-BUSINESS-INPUT': update.ai_input,
+        'AI-BUSINESS-OUTPUT': update.ai_output,
+        'BUSINESS-UPDATE': update.business_update
     } for update in updates])
 
     temp_dir = tempfile.mkdtemp()

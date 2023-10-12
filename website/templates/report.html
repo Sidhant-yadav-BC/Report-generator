@@ -9,15 +9,25 @@
 
 
 {% block body%}
-    <div class="container mt-5">
-        <h2>Data Table</h2>
-        <div class="table-container">
-            {{ table_html | safe }}
-            
-            <!-- Add a button for downloading Excel -->
-            <form action="{{ url_for('admin_view.download_xlsx') }}" method="GET">
-                <button type="submit"  id='excl_button' class="btn btn-primary">Download Excel</button>
-            </form>
-        </div>
+<div class="container mt-5">
+    <h2>Data Table</h2>
+    <div class="table-container">
+        {{ table_html | safe }}
+        
+        <!-- Add a button for downloading Excel -->
+        
+        
     </div>
+    <form action="{{url_for('admin_view.download_xlsx')}}" method="GET">
+        <button type="submit"  id='excl_button' class="btn btn-primary">Download Excel</button>
+    </form>
+    <div class='report_button'id="report_button" name="report_button">
+        <form action="{{url_for('admin_view.portfolio_details')}}" method = 'GET'>
+            <button type="submit" name="submitType" value="report">Report</button>
+        </form>
+    </div>
+    <form action="{{url_for('auth.logout')}}" method="GET">
+        <button type="submit" class="back-button">Back to Home Page</button>
+    </form>
+</div>
 {% endblock body%}

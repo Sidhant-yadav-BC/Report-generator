@@ -3,16 +3,7 @@ body, h1, h2, p, form, label, input, a {
     margin: 0;
     padding: 0;
 }
-.cont {
-    margin-top: 5px;
-    background-color: #ffffff;
-    border-radius: 5px;
-    padding: 5px;
-    margin-left: 140px;
-    margin-right: 50px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+
 
 /* Position the top-left image */
 .top-left-image {
@@ -43,26 +34,40 @@ p {
     margin-right: 20px;
     vertical-align: top;
 }
+.input-group label {
+    text-align: left; /* Right-align the labels */
+    margin-right: 20px; /* Add spacing between the label and input */
+    
+}
+.input-group select {
+   height: 30px;
+   width: 200px;
+   font-size: 16px;
+   border-color: #bc2b2b;
+
+}
 
 .date-input-group {
     display:inline-flex; /* Use flexbox to align items horizontally */
-    align-items: center; /* Vertically center items */
+     /* Vertically center items */
     margin-bottom: 20px; /* Add spacing between the date input and other elements */
 }
 
 .date-input-group label {
     
     text-align: right; /* Right-align the labels */
-    margin-right: 20px; /* Add spacing between the label and input */
-    margin-left: 40px;
+    margin-right: 2px; /* Add spacing between the label and input */
+    margin-left: 10px;
+    margin-bottom: 50px;
 }
 
 .date-input-group input[type="date"] {
     flex: 1; /* Allow the input fields to expand and fill available space */
     width: 100%; /* Set width to auto to fill available space */
-    
-    margin-right: 40px;
-    
+    height: 10px;
+    margin-right: 10px;
+    margin-top: 25px;
+    border-color: #bc2b2b;
     
 }
 
@@ -84,7 +89,7 @@ form {
     text-align: center;
     margin: 20px;
     width: 1200px;
-    max-height: 680px;
+    max-height: 880px;
     margin: 0 auto;
     
 }

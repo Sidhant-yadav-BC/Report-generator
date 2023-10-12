@@ -4,15 +4,17 @@ from flask_login import UserMixin
 
 class BusinessUpdates(db.Model):
     update_id = db.Column(db.Integer, primary_key=True)
-    user_id= db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable= False)
     date = db.Column(db.DateTime(timezone=False))
-    portfolio = db.Column(db.String(200))
+    username= db.Column(db.String(200), nullable= False)
+    user_input=db.Column(db.String(10000))
+    user_output=db.Column(db.String(10000))
     service = db.Column(db.String(100))
-    subtopics = db.Column(db.String(100))
+    portfolio = db.Column(db.String(200))
     teammates = db.Column(db.String(1000), default=None)
-    input = db.Column(db.String(10000))
-    output = db.Column(db.String(10000))
-    update = db.Column(db.String(10000))
+    progress = db.Column(db.String(100))
+    ai_input = db.Column(db.String(10000))
+    ai_output = db.Column(db.String(10000))
+    business_update=db.Column(db.String(10000))
 
 class Users(db.Model, UserMixin):
     
@@ -28,4 +30,3 @@ class Users(db.Model, UserMixin):
     username = db.Column(db.String(150), nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(150), nullable=False)
-    updates = db.relationship('BusinessUpdates')

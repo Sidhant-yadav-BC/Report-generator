@@ -1,12 +1,10 @@
-body, h1, h2, p, form, label, input, a {
+body, h1,h2, p, form, label, input, a {
 
     margin: 0;
-
     padding: 0;
 
 }
 
- 
 
 body {
 
@@ -83,6 +81,8 @@ form {
 
     max-width: 400px;
 
+    max-height: 1200px;
+
     margin: 0 auto;
 
 }
@@ -125,17 +125,22 @@ form#report {
     margin: 20px;
 
     max-width: 400px;
-    max-height: 600px;
+    max-height: 900px;
 
     margin: 0 auto;
 
+}
+select#project{
+    width: 310px;
+    height: 35px;
+    font-size: 16px;
+    border-color: #333;
 }
 
 
 label {
 
     font-weight: bold;
-
     display: block;
 
     margin-bottom: 5px;
@@ -146,29 +151,112 @@ label {
 
 }
 
+label#sub{
+    font-weight: bold;
+    display: block;
+    margin-top: 5px;
+    font-size: 23px;
+    text-align: center;
+}
+
+label#input,
+label#output,
+label#bu
+label#date,
+label#portfolio,
+label#team,
+label#progress,
+label#user_input,
+label#user_output,
+label#service {
+
+    font-weight: bold;
+    display: block;
+
+    margin-bottom: 5px;
+
+    margin-top: 10px;
+
+    font-size: 18px;
+
+}
+
+output#date,
+output#portfolio,
+output#team,
+output#progress,
+output#user_input,
+output#user_output,
+output#service {
+
+
+    margin-bottom: 5px;
+
+    margin-top: 10px;
+
+    font-size: 15px;
+
+}
+
 input#sub_project {
 
     width: 290px;
 
+    border-color: #333;
 
     background-color: white; /* White background color for text areas */
 
     color: #333; /* Text color for text areas */
 
-    font-size: 18px;
+    font-size: 16px;
 }
 
-textarea#work {
+textarea#input1 {
 
-    width: 290px;
+    width: 310px;
 
-    height: 50px;
+    height: 35px;
 
     background-color: white; /* White background color for text areas */
 
     color: #333; /* Text color for text areas */
 
-    font-size: 18px;
+    font-size: 16px;
+
+    border-radius: 5px;
+
+}
+
+textarea#output1 {
+
+    width: 310px;
+
+    height: 35px;
+
+    background-color: white; /* White background color for text areas */
+
+    color: #333; /* Text color for text areas */
+
+    font-size: 16px;
+
+    border-radius: 5px;
+
+}
+
+
+textarea#team {
+
+    width: 310px;
+
+    height: 30px;
+
+    background-color: white; /* White background color for text areas */
+
+    color: #333; /* Text color for text areas */
+
+    font-size: 16px;
+
+    border-radius: 5px;
 
 }
 
@@ -188,7 +276,7 @@ textarea#bu {
 
     color: #333; /* Text color for text areas */
 
-    font-size: 18px;
+    font-size: 16px;
 
 }
 
@@ -284,13 +372,17 @@ a:hover {
 
 .input-group {
     display: inline-block; /* Make the divs appear in a single line */
-    margin-right: 80px; /* Add spacing between the dropdowns */
+    margin-right: 55px; /* Add spacing between the dropdowns */
 }
 
 /* Adjust the width of the select elements as needed */
 .input-group select {
-    width: 100px; /* Adjust the width as per your design */
+    width: 120px;
+    height: 30px;
+    font-size: 16px; /* Adjust the width as per your design */
+    border-color: #333;
 }
+
 
 /* Style the label */
 label[for="selected_date"] {
@@ -302,7 +394,7 @@ label[for="selected_date"] {
 
 /* Style the date input */
 input[type="date"] {
-    width: 200px; /* Adjust the width as needed */
+    width: 300px; /* Adjust the width as needed */
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -346,7 +438,7 @@ input[type="date"]:focus {
 
 /* Responsive design for smaller screens */
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 1200px) {
 
     form {
 

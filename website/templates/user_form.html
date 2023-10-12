@@ -1,11 +1,16 @@
 {% extends "base.html" %}
-{%block title%}SIGN_UP{% endblock title%}
+{%block title%}Update form{% endblock title%}
 
 {% block body%}
-    <h1>Welcome, {{ username }}!</h1>
+    <h1></h1>
     <form method="POST" action="{{url_for('user_view.process_form')}}" id="report">
-        <label for="work">Work you did this week:</label>
-        <textarea id="work" name="work" required></textarea><br><br>
+        <label for="date">Select a Date:</label>
+         <input type="date" id="selected_date" name="selected_date" required><br><br>
+        
+        <label for="work">Input</label>
+        <textarea id="input1" name="user_input" required></textarea><br><br>
+        <label for="work">Output</label>
+        <textarea id="output1" name="user_output" required></textarea><br><br>
         <label for="project">Portfolio:</label>
         <select id="project" name="project" required>
             <option value="Agilisys">Agilisys</option>
@@ -36,25 +41,29 @@
             <option value="Salary Finance">Salary Finance</option>
             <option value="Scoresy">Scoresy</option>
         </select><br><br>
-        <label for="username">Sub Project:</label>
+        <label for="username">Project</label>
         <input type="text" id="sub_project" name="sub_project" required><br><br>
-        <label for="services">Service:</label>
-        <select id="services" name="services" required>
-            <option value="DSaaS">DSaaS</option>
-            <option value="Product">Product</option>
-            <option value="MarTech">MarTech</option>
-        </select><br><br>
-        <label for="team">Team Members:</label>
+        <div class="input-group">
+          <label for="service">Service:</label>
+          <select id="service" name="services" required>
+              <option value="DSaaS">DSaaS</option>
+              <option value="Product">Product</option>
+              <option value="MarTech">MarTech</option>
+          </select>
+      </div>
+      
+      <div class="input-group">
+          <label for="progress">Progress</label>
+          <select id="progress" name="progress" required>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+          </select>
+      </div>
+        <br><br>      
+        <label for="team">Team Members</label>
         <textarea id="team" name="team" ></textarea><br><br>
-        <label for="progress">Progress:</label>
-        <select id="progress" name="progress" required>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-        </select><br><br>
          <!-- Date selection input added here -->
-         <label for="date">Select a Date:</label>
-         <input type="date" id="selected_date" name="selected_date" required><br><br>
-        <input type="submit" value="Submit">
+         <input type="submit" value="Submit">
     </form>
 </body>
 </html>

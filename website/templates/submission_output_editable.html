@@ -1,20 +1,43 @@
 {% extends "base.html" %}
-{% block title %}SIGN_UP{% endblock title %}
+{% block title %}Edit update{% endblock title %}
+
+
+{% block head %}
+
+<link rel="stylesheet" href="static/style.css">
+{% endblock head %}
+
 
 {% block body %}
-<h1>Submission Output (Editable)</h1>
-<form method="POST" action="{{ url_for('user_view.update_submission') }}">
-    <label>Your Submission:</label>
+<h1></h1>
+<form method="POST" action="/update_submission">
+    <label id="sub" name="sub">Your Submission</label>
     <br><br>
-    <label>Input</label>
-    <textarea name="input" id="input" contenteditable="true">{{ input }}</textarea><br><br>
+    <label id="date" name="date">Date of Submission</label>
+    <output id="date" name="date" readonly> {{ date }}</output><br><br>
+    <label id="user_input" name="user_input">Your Input</label>
+    <output id="user_input" name="user_input" readonly> {{ user_input }}</output><br><br>
+    <label id="user_output" name="user_output">Your Output</label>
+    <output id="user_output" name="user_output" readonly> {{ user_output }}</output><br><br>
+    <label id="portfolio" name="portfolio">Portfolio</label>
+    <output id="portfolio" name="portfolio" readonly> {{ portfolio }}</output><br><br>
+    <label id="service" name="service">Service</label>
+    <output id="service" name="service" readonly> {{ service }}</output><br><br>
+    <label  id="progress" name="progress">Status</label>
+    <output id="progress" name="progress" readonly> {{ progress }}</output><br><br>
+    <label id="team" name="team">Team Member</label>
+    <output id="team" name="team" readonly> {{ team }}</output><br><br>
+    
+    
+    <label name="input" id="input">AI Input</label>
+    <textarea name="input" id="input" contenteditable="true">{{ input }}</textarea>
     <br><br>
-    <label>Output</label>
-    <textarea name="output" id="output" contenteditable="true">{{ output }}</textarea><br><br>
+    <label name="output" id="output" >AI Output</label>
+    <textarea name="output" id="output" contenteditable="true">{{ output }}</textarea>
     <br><br>
-    <label>Business Update</label>
-    <textarea name="bu" id="bu" contenteditable="true">{{ business_update }}</textarea><br><br>
+    <label name="bu" id="bu">Business Update</label>
+    <textarea name="bu" id="bu" contenteditable="true">{{ business_update }}</textarea>
     <input type="submit" value="Update Submission">
 </form>
-<a href="/">Back to Home</a>
+<a href="{{url_for('auth.logout')}}">Back to Home</a>
 {% endblock body %}
