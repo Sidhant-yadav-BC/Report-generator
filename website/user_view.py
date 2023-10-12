@@ -39,7 +39,8 @@ gpt_response = ''
 def user_form():
     if not current_user.is_authenticated:
         return redirect(url_for('auth.login'))  # Redirect to the login page
-    return render_template('user_form.html', username=current_user.username)
+    else:
+        return render_template('user_form.html', username=current_user.username)
 
 
 # Define the route for processing the form submission
