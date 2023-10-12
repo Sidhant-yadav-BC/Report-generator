@@ -17,7 +17,7 @@ h1 {
     color: white;
     height: 25px;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 form#docx {
@@ -70,6 +70,26 @@ button#docx_button:hover {
 }
 
 .back-button {
+    display: block;
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 5px;
+    margin-left: 1400px;
+    
+
+}
+
+.back-button:hover {
+    background-color: #555;
+}
+
+
+.email-button {
     display: inline-block;
     padding: 5px 10px;
     background-color: #333;
@@ -82,7 +102,7 @@ button#docx_button:hover {
     align-items: center;
 }
 
-.back-button:hover {
+.email-button:hover {
     background-color: #555;
 }
 

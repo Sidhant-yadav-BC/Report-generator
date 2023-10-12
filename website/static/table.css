@@ -30,6 +30,11 @@ table {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 /* Style the "Report" button */
+.report_button {
+    text-align: center; /* Center the content horizontally */
+    margin-top: 10px;
+}
+
 .report_button button {
     display: inline-block;
     padding: 12px 40px; /* Adjust the padding as needed for button size */
@@ -39,9 +44,7 @@ table {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px; /* Adjust the font size as needed */
-    margin-top: 10px;
     transition: background-color 0.3s; /* Add a smooth color transition on hover */
-    margin-left: 628px;
 }
 
 .report_button button:hover {
@@ -101,7 +104,7 @@ tr:hover {
 }
 
 .back-button {
-    display: inline-block;
+    display: flex;
     padding: 5px 10px;
     background-color: #333;
     color: #fff;
@@ -109,10 +112,13 @@ tr:hover {
     border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    margin-top: 330px;
-    margin-left: 625px
+    margin-top: 10px;
+    text-align: center;
 }
-
+button {
+    margin: 0 auto; /* Center the button horizontally */
+    /* Add any additional styling you need for the button */
+}
 .back-button:hover {
     background-color: #555;
 }

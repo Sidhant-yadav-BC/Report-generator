@@ -4,7 +4,6 @@ body, h1, h2, p, form, label, input, a {
     padding: 0;
 }
 
-
 /* Position the top-left image */
 .top-left-image {
     position: absolute;
@@ -29,54 +28,61 @@ p {
     text-align: center;
 }
 
-.input-group {
-    display: inline-block;
+/* Common styles for input groups */
+
+.input-group{
+    margin-top: 3px;
+}
+
+.input-group,
+.date-input-group {
+    display:inline-flex;
     margin-right: 20px;
     vertical-align: top;
+    padding: 5px 0px 20px 0px
+
+
+
 }
 .input-group label {
-    text-align: left; /* Right-align the labels */
-    margin-right: 20px; /* Add spacing between the label and input */
+    display: block;
+    margin-top: 5px;
+    margin-left: 20px;
+
     
 }
-.input-group select {
-   height: 30px;
-   width: 200px;
-   font-size: 16px;
-   border-color: #bc2b2b;
-
-}
-
-.date-input-group {
-    display:inline-flex; /* Use flexbox to align items horizontally */
-     /* Vertically center items */
-    margin-bottom: 20px; /* Add spacing between the date input and other elements */
-}
-
-.date-input-group label {
-    
-    text-align: right; /* Right-align the labels */
-    margin-right: 2px; /* Add spacing between the label and input */
+.input-group select{
+    height: 25px;
+    width: auto;
+    font-size: 16px;
+    border-color: #0b0a0a;
+    border-radius: 7px;
     margin-left: 10px;
-    margin-bottom: 50px;
 }
-
-.date-input-group input[type="date"] {
-    flex: 1; /* Allow the input fields to expand and fill available space */
-    width: 100%; /* Set width to auto to fill available space */
-    height: 10px;
-    margin-right: 10px;
-    margin-top: 25px;
-    border-color: #bc2b2b;
+.date-input-group label {
+    margin-top: 5px;
+    margin-left: 20px;
+    display: block;
+   
     
 }
 
+.date-input-group input {
+    height: 25px;
+    width: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+    border-color: #0b0a0a;
+    border-radius: 7px;
+    margin-left: 0px;
+    font-size: 16px;
+    
+    
+}
 
 h1 {
     background-color: #b71010;
     color: #fff;
     padding: 20px;
-    height: 25px;
     margin-bottom: 20px;
 }
 
@@ -87,28 +93,20 @@ form {
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
     display: inline-block;
     text-align: center;
-    margin: 20px;
-    width: 1200px;
-    max-height: 880px;
+    width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
-    
 }
 
 label {
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
-    margin-top: 10px;
 }
 
 input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-bottom: 15px;
-    height: 100%;
+    width: 200px; /* Adjust the width to your needs */
+    margin-left: 20px; /* Add margin to separate date input from other inputs */
 }
 
 .btn-group {

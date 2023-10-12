@@ -3,7 +3,8 @@
 from flask import Blueprint,redirect, url_for, render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates
-from . import db
+import smtplib
+from email.message import EmailMessage
 from docx import Document
 import io
 import pandas as pd
@@ -11,6 +12,9 @@ import tempfile
 import os
 
 admin_view = Blueprint('admin_view', __name__)
+
+EMAIL_ADDRESS = "reportgenrator@gmail.com"
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 
 @admin_view.route('/admin_landing')
 @login_required
@@ -199,3 +203,67 @@ def download_xlsx():
 
     return send_file(xlsx_file_path, as_attachment=True, download_name='data.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
+@login_required
+@admin_view.route('/send', methods=['GET', 'POST'])
+def send():
+    msg = EmailMessage()
+
+    msg['Subject'] = 'This weeks Report'
+
+    msg['From'] = EMAIL_ADDRESS
+
+    msg['To'] = 'sidhantyadav92@gmail.com'
+
+    msg.set_content('Hello, find this weeks bussiness update attached below.')
+
+ 
+
+    # Get the portfolio_details from the session and attach it as a DOCX file
+
+    portfolio_details = session.get('portfolio-textarea', '')
+
+ 
+
+    doc = Document()
+
+    doc.add_heading('Portfolio Details', level=0)
+
+    doc.add_paragraph(portfolio_details)
+
+ 
+
+    temp_docx_file = io.BytesIO()
+
+    doc.save(temp_docx_file)
+
+    temp_docx_file.seek(0)
+
+ 
+
+    # Attach the DOCX content to the email
+
+    msg.add_attachment(
+
+        temp_docx_file.read(),
+
+        maintype='application',
+
+        subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
+
+        filename='portfolio_details.docx'
+
+    )
+
+ 
+
+    # Send the email
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+
+        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+
+        smtp.send_message(msg)
+
+ 
+
+    return redirect(url_for("auth.logout"))
