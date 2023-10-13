@@ -202,7 +202,7 @@ def send():
     msg = EmailMessage()
     msg['Subject'] = 'This weeks Report'
     msg['From'] = EMAIL_ADDRESS
-    msg['To'] = 'sidhantyadav92@gmail.com'
+    msg['To'] = 'yrishu71@gmail.com'
     
     msg.set_content('Hello, find this weeks bussiness update attached below.')
  
