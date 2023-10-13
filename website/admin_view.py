@@ -91,22 +91,72 @@ def update_portfolio_details():
 @login_required
 @admin_view.route('/download_portfolio_docx', methods=['POST'])
 def download_portfolio_docx():
-    portfolio_details = session.get('portfolio-textarea', '')
+    fromdate = session.get('fromdate', '')
+    todate = session.get('todate', '')
+    service = session.get('service', '')
+    portfolio = session.get('portfolio', '')
 
-    doc = Document()
-    doc.add_heading('Portfolio Details', level=0)
-    doc.add_paragraph(portfolio_details)
+    if portfolio == 'all':
+        updates = BusinessUpdates.query.filter(
+            BusinessUpdates.date.between(fromdate, todate),
+            BusinessUpdates.service.like(service)
+        ).all()
+    else:
+        updates = BusinessUpdates.query.filter(
+            BusinessUpdates.date.between(fromdate, todate),
+            BusinessUpdates.portfolio.like(portfolio),
+            BusinessUpdates.service.like(service)
+        ).all()
 
-    temp_docx_file = io.BytesIO()
-    doc.save(temp_docx_file)
-    temp_docx_file.seek(0)
+    updates_data = []
+    for update in updates:
+        update_data = {
+            "Date": update.date,
+            "Portfolio": update.portfolio,
+            "Service": update.service,
+            "AI_Input": update.ai_input,
+            "AI_Output": update.ai_output
+            # Add other columns as needed
+        }
+        updates_data.append(update_data)
+
+    # Convert the list of dictionaries to a pandas DataFrame
+    df = pd.DataFrame(updates_data)
+
+    temp_doc = Document()
+    temp_doc.add_heading('Report', level=0)
+
+    list1 = []
+
+    for name in df["Portfolio"]:
+        if name in list1:
+            continue
+        else:
+            list1.append(name)
+            
+    finalstr = ""
+    for x in list1:
+        finalstr = finalstr +"\n""\n"+ x
+        temp_doc.add_heading(x, level=2)
+        for index, row in df.iterrows():
+            if x == row["Portfolio"]:
+                detail = f"""
+        {row['AI_Input']} - {row['AI_Output']}
+
+    """
+                temp_doc.add_paragraph(detail)
+            
+    temp_doc_file = io.BytesIO()
+    temp_doc.save(temp_doc_file)
+    temp_doc_file.seek(0)
 
     return send_file(
-        temp_docx_file,
+        temp_doc_file,
         as_attachment=True,
         download_name='portfolio_details.docx',
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
+
 
 @login_required
 @admin_view.route('/excel', methods=['POST'])
