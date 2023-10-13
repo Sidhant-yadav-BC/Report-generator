@@ -124,7 +124,7 @@ def download_portfolio_docx():
     df = pd.DataFrame(updates_data)
 
     temp_doc = Document()
-    temp_doc.add_heading('Report', level=0)
+    temp_doc.add_heading('Project Updates', level=0)
 
     list1 = []
 
@@ -249,19 +249,12 @@ def download_xlsx():
 @login_required
 @admin_view.route("/send", methods=["GET","POST"])
 def send():
-    msg = EmailMessage()
-    msg['Subject'] = 'This weeks Report'
-    msg['From'] = EMAIL_ADDRESS
-    msg['To'] = 'yrishu71@gmail.com'
-    
-    msg.set_content('Hello, find this weeks bussiness update attached below.')
- 
+    recevier_list=['yrishu71@gmail.com', 'sidhantyadav92@gmail.com']
     # Get the portfolio_details from the session and attach it as a DOCX file
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
     service = session.get('service', '')
     portfolio = session.get('portfolio', '')
-
 
     if portfolio == 'all':
         updates = BusinessUpdates.query.filter(
@@ -282,7 +275,7 @@ def send():
     } for update in updates])
     
     doc = Document()
-    doc.add_heading('Report', level=0)
+    doc.add_heading('Project Updates', level=0)
 
     list1 = []
 
@@ -308,20 +301,26 @@ def send():
     doc.save(temp_docx_file)
     temp_docx_file.seek(0)
     
-    # Attach the DOCX content to the email
-    msg.add_attachment(
-        temp_docx_file.read(),
-        maintype='application',
-        subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
-        filename='portfolio_details.docx'
-
-    )
-
-    # Send the email
-
-    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-        smtp.send_message(msg)
-        flash(f"email sent to {msg['To']}",category='success')
+    for item in recevier_list:
+        msg = EmailMessage()  # Create a new EmailMessage instance for each recipient
+        msg['Subject'] = 'This weeks Report'
+        msg['From'] = EMAIL_ADDRESS
+        msg['To'] = item
+    
+        msg.set_content('Hello, find this week\'s business update attached below.')
         
+        # Attach the DOCX content to the email
+        msg.add_attachment(
+            temp_docx_file.read(),
+            maintype='application',
+            subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
+            filename='portfolio_details.docx'
+        )
+
+        # Send the email
+        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+            smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            smtp.send_message(msg)
+
+    flash(f"Updates sent successfully",category='success')
     return redirect(url_for("auth.logout"))
