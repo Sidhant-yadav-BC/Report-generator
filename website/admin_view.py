@@ -32,9 +32,6 @@ def portfolio_details():
     service = session.get('service', '')
     portfolio = session.get('portfolio', '')
     
-
-    portfolio_details_list = []  # Create a list to store portfolio details
-
     
     if portfolio == 'all':
         updates = BusinessUpdates.query.filter(
@@ -62,7 +59,6 @@ def portfolio_details():
 
     # Convert the list of dictionaries to a pandas DataFrame
     df = pd.DataFrame(updates_data)
-    portfolio_details = ""
  
 
     list1 = []
@@ -72,7 +68,6 @@ def portfolio_details():
         else:
             list1.append(name)
     
-    print(list1)
 
     finalstr = ""
     for x in list1:
@@ -166,9 +161,7 @@ def download_xlsx():
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
 
-    query = ''
     df = ''
-
     if portfolio == 'all':
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
@@ -204,66 +197,80 @@ def download_xlsx():
     return send_file(xlsx_file_path, as_attachment=True, download_name='data.xlsx', mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
 @login_required
-@admin_view.route('/send', methods=['GET', 'POST'])
+@admin_view.route("/send", methods=["GET","POST"])
 def send():
     msg = EmailMessage()
-
     msg['Subject'] = 'This weeks Report'
-
     msg['From'] = EMAIL_ADDRESS
-
     msg['To'] = 'sidhantyadav92@gmail.com'
-
+    
     msg.set_content('Hello, find this weeks bussiness update attached below.')
-
  
-
     # Get the portfolio_details from the session and attach it as a DOCX file
+    fromdate = session.get('fromdate', '')
+    todate = session.get('todate', '')
+    service = session.get('service', '')
+    portfolio = session.get('portfolio', '')
 
-    portfolio_details = session.get('portfolio-textarea', '')
 
- 
+    if portfolio == 'all':
+        updates = BusinessUpdates.query.filter(
+            BusinessUpdates.date.between(fromdate, todate),
+            BusinessUpdates.service.like(service)
+        ).all()
+    else:
+        updates = BusinessUpdates.query.filter(
+            BusinessUpdates.date.between(fromdate, todate),
+            BusinessUpdates.portfolio.like(portfolio),
+            BusinessUpdates.service.like(service)
+        ).all()
 
+    df = pd.DataFrame([{
+        'PORTFOLIO': update.portfolio,
+        'AI-INPUT': update.ai_input,
+        'AI-OUTPUT': update.ai_output,
+    } for update in updates])
+    
     doc = Document()
+    doc.add_heading('Report', level=0)
 
-    doc.add_heading('Portfolio Details', level=0)
+    list1 = []
 
-    doc.add_paragraph(portfolio_details)
+    for name in df["PORTFOLIO"]:
+        if name in list1:
+            continue
+        else:
+            list1.append(name)
+            
+    finalstr = ""
+    for x in list1:
+        finalstr = finalstr +"\n""\n"+ x
+        doc.add_heading(x, level=2)
+        for index, row in df.iterrows():
+            if x == row["PORTFOLIO"]:
+                detail = f"""
+        {row['AI-INPUT']} - {row['AI-OUTPUT']}
 
- 
+    """
+                doc.add_paragraph(detail)
 
     temp_docx_file = io.BytesIO()
-
     doc.save(temp_docx_file)
-
     temp_docx_file.seek(0)
-
- 
-
+    
     # Attach the DOCX content to the email
-
     msg.add_attachment(
-
         temp_docx_file.read(),
-
         maintype='application',
-
         subtype='vnd.openxmlformats-officedocument.wordprocessingml.document',
-
         filename='portfolio_details.docx'
 
     )
 
- 
-
     # Send the email
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
-
         smtp.send_message(msg)
-
- 
-
+        
     return redirect(url_for("auth.logout"))
