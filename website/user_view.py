@@ -34,13 +34,17 @@ gpt_response = ''
 # landing page for normal user
 @user_view.route('/home', methods=['POST', 'GET'])
 @user_view.route('/', methods=['POST', 'GET'])
+# @user_view.route('', methods=['POST', 'GET'])
 @user_view.route("/user_form", methods=['POST', 'GET'])
 @login_required
 def user_form():
     if not current_user.is_authenticated:
         return redirect(url_for('auth.login'))  # Redirect to the login page
     else:
-        return render_template('user_form.html', username=current_user.username)
+        if current_user.role == 'user':
+            return render_template('user_form.html', username=current_user.username)
+        else:
+            return redirect(url_for("admin_view.admin_landing"))
 
 
 # Define the route for processing the form submission
