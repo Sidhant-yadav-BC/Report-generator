@@ -252,7 +252,7 @@ def download_xlsx():
 @login_required
 @admin_view.route("/send", methods=["GET","POST"])
 def send():
-    recevier_list=['yrishu71@gmail.com', 'sidhantyadav92@gmail.com']
+    recevier_list=['harshada.sawant@blenheimchalcot.com', 'harshil.panchal@blenheimchalcot.com', 'yrishu71@gmail.com']
     # Get the portfolio_details from the session and attach it as a DOCX file
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
