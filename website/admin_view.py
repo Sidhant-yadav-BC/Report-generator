@@ -60,7 +60,10 @@ def portfolio_details():
     # Convert the list of dictionaries to a pandas DataFrame
     df = pd.DataFrame(updates_data)
  
-
+    if df.empty:
+        flash("No data available", category="error")
+        return redirect(url_for("admin_view.admin_landing"))
+    
     list1 = []
     for name in df["Portfolio"]:
         if name in list1:
