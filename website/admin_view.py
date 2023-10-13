@@ -1,6 +1,6 @@
 # admin_view.py
 
-from flask import Blueprint,redirect, url_for, render_template, request, session, render_template_string, send_file
+from flask import Blueprint,redirect, url_for, flash,render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates
 import smtplib
@@ -272,5 +272,6 @@ def send():
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         smtp.send_message(msg)
+        flash(f"email sent to {msg['To']}",category='success')
         
     return redirect(url_for("auth.logout"))
