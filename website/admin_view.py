@@ -1,5 +1,3 @@
-# admin_view.py
-
 from flask import Blueprint,redirect, url_for, flash,render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates
@@ -252,7 +250,7 @@ def download_xlsx():
 @login_required
 @admin_view.route("/send", methods=["GET","POST"])
 def send():
-    recevier_list=['harshada.sawant@blenheimchalcot.com', 'harshil.panchal@blenheimchalcot.com', 'yrishu71@gmail.com']
+    recevier_list=['yrishu71@gmail.com']
     # Get the portfolio_details from the session and attach it as a DOCX file
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
