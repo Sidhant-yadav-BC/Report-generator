@@ -273,6 +273,7 @@ def send():
         'PORTFOLIO': update.portfolio,
         'AI-INPUT': update.ai_input,
         'AI-OUTPUT': update.ai_output,
+        'BUSINESS-UPDATE': update.business_update
     } for update in updates])
     
     doc = Document()
@@ -293,7 +294,7 @@ def send():
         for index, row in df.iterrows():
             if x == row["PORTFOLIO"]:
                 detail = f"""
-        {row['AI-INPUT']} - {row['AI-OUTPUT']}
+        {row['AI-INPUT']} - {row['BUSINESS-UPDATE']}
 
     """
                 doc.add_paragraph(detail)
@@ -307,7 +308,7 @@ def send():
         msg['Subject'] = 'This weeks Report'
         msg['From'] = EMAIL_ADDRESS
         msg['To'] = item
-    
+
         msg.set_content('Hello, find this week\'s business update attached below.')
         
         # Attach the DOCX content to the email
