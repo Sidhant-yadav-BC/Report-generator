@@ -45,9 +45,9 @@ class Users(db.Model, UserMixin):
     def get_id(self):
         return str(self.id)
     
-    @property
-    def id(self):
-        return self.id
+    # @property
+    # def id(self):
+    #     return self.id
     
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50), nullable=False, default='user', server_default='user')

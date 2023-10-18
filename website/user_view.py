@@ -3,7 +3,7 @@ import os
 import openai
 import dotenv
 import re
-from .models import BusinessUpdates
+from .models import BusinessUpdates, Projects, Portfolios
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
@@ -50,13 +50,17 @@ def user_form():
 # Define the route for processing the form submission
 @user_view.route('/process_form', methods=['POST'])
 def process_form():
+    selected_date = request.form['selected_date']
     user_input = request.form['user_input']
     user_output = request.form['user_output']
-    portfolio = request.form['project']
+    kpi = request.form['kpi']
+    portfolio = request.form['portfolio']
+    project = request.form['project']
     service = request.form['services']
-    selected_date = request.form['selected_date']
     progress = request.form['progress']
     team = request.form['team']
+    blockers = request.form['blockers']
+    
 
     # Use the OpenAI API to generate a response based on user input
     prompts = [
@@ -106,7 +110,10 @@ def process_form():
     session['team'] = team
     session['user_input'] = user_input
     session['user_output'] = user_output
-
+    session['project']= project
+    session['blockers'] = blockers
+    session['kpi'] = kpi
+    session['blockers'] = blockers
     # Redirect to the submission editing page
     return redirect(url_for('user_view.submission_output_editable'))
 
@@ -140,24 +147,28 @@ def submission_output_editable():
 
 
     return render_template('submission_output_editable.html', submission=session.get('submission', ''),
-                           username=session.get('username', ''), input=input_section, output=output_section,
-                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output)
+                            input=input_section, output=output_section,
+                           business_update=business_update_section  ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output, 
+                           kpi = session.get('kpi', ''), blocker = session.get('blockers', ''))
 
 # Define the route for updating the submission
 @login_required
 @user_view.route('/update_submission', methods=['POST'])
 def update_submission():
     text = session.get('submission', '')
-    portfolio = session.get('portfolio', '')
+    portfolio_name = session.get('portfolio', '')
     service = session.get('service', '')
     input_data = request.form.get('input')
     output_data = request.form.get('output')
     business_update = request.form.get('bu')
     
+    
     # Assuming the following form fields are present: 'input', 'output', 'bu', 'portfolio', 'service' 
     date_str = session.get('selected_date', '')
     date = datetime.strptime(date_str, '%Y-%m-%d') #refactoring data fromat as SQLite DateTime type only accepts Python datetime
     teammates = session.get('team', '')
+    db_obj_project = Projects.query.filter_by(name=session.get('project')).first()
+    db_obj_portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
 
     
 
@@ -165,16 +176,20 @@ def update_submission():
         # Create a new BusinessUpdates instance
         update_entry = BusinessUpdates(
             date = date,
-            username=current_user.username,
+            user_id = current_user.id,
             user_input= session.get('user_input', ''),
             user_output=session.get('user_output', ''),
-            business_update=business_update,
+            blockers = session.get('blocker', ''),
+            kpi = session.get('kpi', ''),
             service=service,
-            portfolio=portfolio,
+            project_id = db_obj_project.id,
+            portfolio_id = db_obj_portfolio.id,
             teammates=teammates,
             progress=session['progress'],
             ai_input = input_data,
             ai_output = output_data,
+            business_update=business_update,
+           
         )
         
 
