@@ -168,7 +168,9 @@ label#team,
 label#progress,
 label#user_input,
 label#user_output,
-label#service {
+label#service,
+label#kpi,
+label#blocker {
 
     font-weight: bold;
     display: block;
@@ -187,7 +189,9 @@ output#team,
 output#progress,
 output#user_input,
 output#user_output,
-output#service {
+output#service,
+output#kpi,
+output#blocker {
 
 
     margin-bottom: 5px;
@@ -226,7 +230,8 @@ textarea#input1 {
     border-radius: 5px;
 
 }
-
+textarea#kpi,
+textarea#blocker,
 textarea#output1 {
 
     width: 310px;
