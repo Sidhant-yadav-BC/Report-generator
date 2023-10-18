@@ -18,7 +18,7 @@ class BusinessUpdates(db.Model):
     portfolio_id = db.Column(db.Integer, db.ForeignKey('portfolios.id'))
     
     teammates = db.Column(db.String(1000), default="")
-    status = db.Column(db.String(100))
+    progress = db.Column(db.String(100))
     ai_input = db.Column(db.String(10000))
     ai_output = db.Column(db.String(10000))
     business_update = db.Column(db.String(10000))
@@ -45,9 +45,9 @@ class Users(db.Model, UserMixin):
     def get_id(self):
         return str(self.id)
     
-    @property
-    def id(self):
-        return self.id
+    # @property
+    # def id(self):
+    #     return self.id
     
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50), nullable=False, default='user', server_default='user')
