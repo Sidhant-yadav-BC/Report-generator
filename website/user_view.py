@@ -114,6 +114,7 @@ def process_form():
     session['blockers'] = blockers
     session['kpi'] = kpi
     session['blockers'] = blockers
+    #random commnet
     # Redirect to the submission editing page
     return redirect(url_for('user_view.submission_output_editable'))
 
