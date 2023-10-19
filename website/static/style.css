@@ -170,7 +170,7 @@ label#user_input,
 label#user_output,
 label#service,
 label#kpi,
-label#blocker {
+label#blockers {
 
     font-weight: bold;
     display: block;
@@ -191,7 +191,7 @@ output#user_input,
 output#user_output,
 output#service,
 output#kpi,
-output#blocker {
+output#blockers {
 
 
     margin-bottom: 5px;

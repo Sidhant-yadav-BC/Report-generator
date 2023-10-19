@@ -59,7 +59,7 @@ def process_form():
     service = request.form['services']
     progress = request.form['progress']
     team = request.form['team']
-
+    project_details = 'Aim to assist the Customer Success team by answering their questions as a system that has the whole understanding of the data and can answer any complex data queries in seconds. This would reduce the manual efforts of CS team by around 50%. '
     # Use the OpenAI API to generate a response based on user input
     prompts = [
 

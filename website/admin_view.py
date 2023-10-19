@@ -57,7 +57,7 @@ def excel():
             "USER_INPUT": update.user_input,
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
-            # "PORTFOLIO": update.portfolio.name,
+            "PORTFOLIO": update.portfolio.name,
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
