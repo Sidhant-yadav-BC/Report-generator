@@ -113,13 +113,15 @@ def process_form():
     
     session['submission'] = gpt_response
     session['gpt_response'] = gpt_response
-    session['portfolio'] = portfolio
+    session['project'] = project
     session['service'] = service
     session['selected_date'] = selected_date
     session['progress'] = progress
     session['team'] = team
     session['user_input'] = user_input
     session['user_output'] = user_output
+    session['kpi'] = kpi
+    session['project'] = project
 
     # Redirect to the submission editing page
     return redirect(url_for('user_view.submission_output_editable'))
@@ -153,11 +155,12 @@ def submission_output_editable():
     team = session.get('team', '')
     kpi = session.get('kpi', '')
     blocker = session.get('blocker', '')
+    project = session.get('project' , '')
 
 
     return render_template('submission_output_editable.html', submission=session.get('submission', ''),
                            username=session.get('username', ''), input=input_section, output=output_section,
-                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output)
+                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output , project = project , kpi=kpi , blocker=blocker)
 
 # Define the route for updating the submission
 @login_required
