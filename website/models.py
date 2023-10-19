@@ -9,8 +9,8 @@ class BusinessUpdates(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_input = db.Column(db.String(10000))
     user_output = db.Column(db.String(10000))
-    blockers = db.Column(db.String())
-    kpi = db.Column(db.String(500))
+    blockers = db.Column(db.String(), default = "")
+    kpi = db.Column(db.String(500), default = "")
     service = db.Column(db.String(100))
     
     # Foreign key references to Projects and Portfolios
@@ -22,6 +22,7 @@ class BusinessUpdates(db.Model):
     ai_input = db.Column(db.String(10000))
     ai_output = db.Column(db.String(10000))
     business_update = db.Column(db.String(10000))
+    
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user = relationship('Users')
     portfolio = relationship('Portfolios')
