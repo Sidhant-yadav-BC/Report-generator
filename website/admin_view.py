@@ -103,8 +103,7 @@ def portfolio_details():
             "Date": update.date,
             "Service": update.service,
             "AI_Input": update.ai_input,
-            "AI_Output": update.ai_output,
-            "PORTFOLIO": (Portfolios.query.filter_by(id = session['portfolio_id'])).name
+            "AI_Output": update.ai_output
             # Add other columns as needed
         }
         updates_data.append(update_data)
