@@ -1,7 +1,7 @@
 from flask import Blueprint,redirect, url_for, flash,render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates
-from .models import Users
+from .models import Users, Portfolios
 import smtplib
 from email.message import EmailMessage
 from docx import Document
@@ -21,7 +21,6 @@ def admin_landing():
     if not current_user.is_authenticated:
         return redirect(url_for('auth.login'))  # Redirect to the login page
     return render_template('admin_landing.html')
-
 @login_required
 @admin_view.route('/excel', methods=['POST'])
 def excel():
@@ -29,24 +28,26 @@ def excel():
     session['todate'] = todate
     fromdate = request.form['fromDate']
     session['fromdate'] = fromdate
-    portfolio = request.form['project']
-    session['portfolio'] = portfolio
-    service = request.form['services']
-    session['service'] = service
+    portfolio_name = request.form['project']
+    
+    session['service'] = request.form['services']
 
     query = ''
     df = ''
 
-    if portfolio == 'all':
+    if portfolio_name == 'all':  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
+        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
+        portfolio_id = portfolio.id
+        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio.like(portfolio),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.portfolio_id == session['portfolio_id'],
+            BusinessUpdates.service.like(session['service'])
         ).all()
 
     updates_data = []
@@ -57,7 +58,7 @@ def excel():
             "USER_INPUT": update.user_input,
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
-            "PORTFOLIO": update.portfolio.name,
+            "PORTFOLIO": update.portfolio_id,
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -77,14 +78,12 @@ def excel():
 @login_required
 @admin_view.route('/portfolio_details', methods=['GET', 'POST'])
 def portfolio_details():
-    
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
     service = session.get('service', '')
-    portfolio = session.get('portfolio', '')
-    
-    
-    if portfolio == 'all':
+    portfolio_id = session.get('portfolio_id', '')  # Use portfolio_id instead of portfolio
+
+    if portfolio_id == 'all':
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
             BusinessUpdates.service.like(service)
@@ -92,15 +91,14 @@ def portfolio_details():
     else:
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio.like(portfolio),
+            BusinessUpdates.portfolio_id == portfolio_id,
             BusinessUpdates.service.like(service)
         ).all()
-    
+
     updates_data = []
     for update in updates:
         update_data = {
             "Date": update.date,
-            # "Portfolio": update.portfolio,
             "Service": update.service,
             "AI_Input": update.ai_input,
             "AI_Output": update.ai_output
@@ -110,29 +108,23 @@ def portfolio_details():
 
     # Convert the list of dictionaries to a pandas DataFrame
     df = pd.DataFrame(updates_data)
- 
+
     if df.empty:
         flash("No data available", category="error")
         return redirect(url_for("admin_view.admin_landing"))
-    
-    list1 = []
-    for name in df["Portfolio"]:
-        if name in list1:
-            continue
-        else:
-            list1.append(name)
-    
+
+    list1 = df["Service"].unique().tolist()  # Use "Service" instead of "Portfolio"
 
     finalstr = ""
     for x in list1:
-        finalstr = finalstr + "\n""\n" + x+ "\n"
-        for index, row in df.iterrows():
-            if x == row["Portfolio"]:
-                finalstr += f"""
+        finalstr = finalstr + "\n\n" + x + "\n"
+        for index, row in df[df["Service"] == x].iterrows():  # Filter based on "Service"
+            finalstr += f"""
         {row['AI_Input']} - {row['AI_Output']}
     """
 
     return render_template_string(render_template('portfolio_details.html', portfolio_details=finalstr))
+
 
 @login_required
 @admin_view.route('/updated_portfolio_details', methods=['GET', 'POST'])
