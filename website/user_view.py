@@ -47,19 +47,6 @@ def user_form():
         else:
             return redirect(url_for("admin_view.admin_landing"))
         
-@user_view.route("/all")
-def all():
-    projects = db.session.query(Projects.name).all()
-
-    # Extract project names from the list of tuples
-    project_names = [project[0] for project in projects]
-
-    # Print the project names
-    print(project_names)
-
-    # Directly return a response with project names as a string
-    return "<br>".join(project_names)
-
 
 # Define the route for processing the form submission
 @user_view.route('/process_form', methods=['POST'])
@@ -77,7 +64,7 @@ def process_form():
     service = request.form['services']
     progress = request.form['progress']
     team = request.form['team']
-    project_details = 'Aim to assist the Customer Success team by answering their questions as a system that has the whole understanding of the data and can answer any complex data queries in seconds. This would reduce the manual efforts of CS team by around 50%. '
+    blocker = request.form['blockers']
     # Use the OpenAI API to generate a response based on user input
     prompts = [
 
@@ -126,13 +113,17 @@ def process_form():
     
     session['submission'] = gpt_response
     session['gpt_response'] = gpt_response
-    session['portfolio'] = portfolio
     session['service'] = service
     session['selected_date'] = selected_date
     session['progress'] = progress
     session['team'] = team
     session['user_input'] = user_input
     session['user_output'] = user_output
+    session['kpi'] = kpi
+    session['blocker'] = blocker
+    session['project_name'] = project_name
+    session['portfolio_id'] = portfolio_id
+    
 
     # Redirect to the submission editing page
     return redirect(url_for('user_view.submission_output_editable'))
@@ -157,7 +148,7 @@ def submission_output_editable():
     output_section = output_match.group(1).strip() if output_match else ""
     business_update_section = business_update_match.group(1).strip() if business_update_match else ""
     gpt_rep = session.get('submission', '')
-    portfolio = session.get('portfolio', '')
+    portfolio = session.get('portfolio_id', '')
     service = session.get('service', '')
     user_input  = session.get('user_input', '')
     user_output = session.get('user_output', '')
@@ -166,11 +157,12 @@ def submission_output_editable():
     team = session.get('team', '')
     kpi = session.get('kpi', '')
     blocker = session.get('blocker', '')
+    project_name = session.get('project_name', '')
 
 
     return render_template('submission_output_editable.html', submission=session.get('submission', ''),
                            username=session.get('username', ''), input=input_section, output=output_section,
-                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output)
+                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input, project = project_name , user_output=user_output, kpi = kpi , blocker = blocker)
 
 # Define the route for updating the submission
 @login_required
@@ -200,11 +192,12 @@ def update_submission():
             blockers = session.get('blocker', ''),
             kpi = session.get('kpi', ''),
             service=service,
-            portfolio=portfolio,
+            portfolio_id=session.get('portfolio_id', '')
             teammates=teammates,
             progress=session['progress'],
             ai_input = input_data,
             ai_output = output_data,
+            business_update= business_update
         )
         
 
