@@ -29,7 +29,7 @@ def excel():
     fromdate = request.form['fromDate']
     session['fromdate'] = fromdate
     portfolio_name = request.form['project']
-    
+    session['project'] = portfolio_name
     session['service'] = request.form['services']
 
     query = ''
@@ -44,6 +44,7 @@ def excel():
         portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
         portfolio_id = portfolio.id
         session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
+        
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
             BusinessUpdates.portfolio_id == session['portfolio_id'],
@@ -81,18 +82,23 @@ def portfolio_details():
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
     service = session.get('service', '')
-    portfolio_id = session.get('portfolio_id', '')  # Use portfolio_id instead of portfolio
-
-    if portfolio_id == 'all':
+    portfolio_name = session.get('project', '')
+    
+    if portfolio_name == 'all':
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
             BusinessUpdates.service.like(service)
         ).all()
     else:
+        
+        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
+        portfolio_id = portfolio.id
+        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
+        
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio_id == portfolio_id,
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.portfolio_id == session['portfolio_id'],
+            BusinessUpdates.service.like(session['service'])
         ).all()
 
     updates_data = []
@@ -108,7 +114,7 @@ def portfolio_details():
 
     # Convert the list of dictionaries to a pandas DataFrame
     df = pd.DataFrame(updates_data)
-
+    print(df)
     if df.empty:
         flash("No data available", category="error")
         return redirect(url_for("admin_view.admin_landing"))
