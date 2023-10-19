@@ -30,6 +30,7 @@ def excel():
     session['fromdate'] = fromdate
     portfolio_name = request.form['project']
     session['project'] = portfolio_name
+
     session['service'] = request.form['services']
 
     query = ''
@@ -51,6 +52,8 @@ def excel():
             BusinessUpdates.service.like(session['service'])
         ).all()
 
+
+    
     updates_data = []
     for update in updates:
         update_data = {
@@ -59,7 +62,7 @@ def excel():
             "USER_INPUT": update.user_input,
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
-            "PORTFOLIO": update.portfolio_id,
+            "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -84,12 +87,15 @@ def portfolio_details():
     service = session.get('service', '')
     portfolio_name = session.get('project', '')
     
-    if portfolio_name == 'all':
+    if portfolio_name == 'all':  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
+        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
+        portfolio_id = portfolio.id
+        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
         
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
@@ -97,13 +103,15 @@ def portfolio_details():
             BusinessUpdates.service.like(session['service'])
         ).all()
 
+
     updates_data = []
     for update in updates:
         update_data = {
             "Date": update.date,
             "Service": update.service,
             "AI_Input": update.ai_input,
-            "AI_Output": update.ai_output
+            "Business_Update": update.business_update,
+            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -115,14 +123,23 @@ def portfolio_details():
         flash("No data available", category="error")
         return redirect(url_for("admin_view.admin_landing"))
 
-    list1 = df["Service"].unique().tolist()  # Use "Service" instead of "Portfolio"
+    portfolio_details = ""
+ 
+
+    list1 = []
+    for name in df["Portfolio"]:
+        if name in list1:
+            continue
+        else:
+            list1.append(name)
 
     finalstr = ""
     for x in list1:
-        finalstr = finalstr + "\n\n" + x + "\n"
-        for index, row in df[df["Service"] == x].iterrows():  # Filter based on "Service"
-            finalstr += f"""
-        {row['AI_Input']} - {row['AI_Output']}
+        finalstr = finalstr + "\n""\n" + x+ "\n"
+        for index, row in df.iterrows():
+            if x == row["Portfolio"]:
+                finalstr += f"""
+        {row['AI_Input']} - {row['Business_Update']}
     """
 
     return render_template_string(render_template('portfolio_details.html', portfolio_details=finalstr))
@@ -142,28 +159,33 @@ def download_portfolio_docx():
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
     service = session.get('service', '')
-    portfolio = session.get('portfolio', '')
+    portfolio_name = session.get('project', '')
 
-    if portfolio == 'all':
+    if portfolio_name == 'all':  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
+        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
+        portfolio_id = portfolio.id
+        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
+        
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio.like(portfolio),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.portfolio_id == session['portfolio_id'],
+            BusinessUpdates.service.like(session['service'])
         ).all()
+
 
     updates_data = []
     for update in updates:
         update_data = {
             "Date": update.date,
-            "Portfolio": update.portfolio,
             "Service": update.service,
             "AI_Input": update.ai_input,
-            "AI_Output": update.ai_output
+            "Business_Update": update.business_update,
+            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -189,7 +211,7 @@ def download_portfolio_docx():
         for index, row in df.iterrows():
             if x == row["Portfolio"]:
                 detail = f"""
-        {row['AI_Input']} - {row['AI_Output']}
+        {row['AI_Input']} - {row['Business_Update']}
 
     """
                 temp_doc.add_paragraph(detail)
@@ -210,37 +232,47 @@ def download_portfolio_docx():
 @login_required
 @admin_view.route('/download_xlsx', methods=['GET', 'POST'])
 def download_xlsx():
-    portfolio = session.get('portfolio', '')
-    service = session.get('service', '')
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
+    service = session.get('service', '')
+    portfolio_name = session.get('project', '')
 
     df = ''
-    if portfolio == 'all':
+    if portfolio_name == 'all':  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
+        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
+        portfolio_id = portfolio.id
+        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
+        
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio.like(portfolio),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.portfolio_id == session['portfolio_id'],
+            BusinessUpdates.service.like(session['service'])
         ).all()
 
-    df = pd.DataFrame([{
-        'DATE': update.date,
-        'USER': update.username,
-        'USER_INPUT': update.user_input,
-        'USER_OUTPUT': update.user_output,
-        'SERVICE': update.service,
-        'PORTFOLIO': update.portfolio,
-        'PROGRESS': update.progress,
-        'TEAMMATES': update.teammates,
-        'AI-BUSINESS-INPUT': update.ai_input,
-        'AI-BUSINESS-OUTPUT': update.ai_output,
-        'BUSINESS-UPDATE': update.business_update
-    } for update in updates])
+
+    
+    updates_data = []
+    for update in updates:
+        update_data = {
+            "DATE": update.date,
+            "USERNAME": update.user.username,
+            "USER_INPUT": update.user_input,
+            "USER_OUTPUT": update.user_output,
+            "SERVICE": update.service,
+            "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
+            "PROGRESS": update.progress,
+            "TEAMMATES": update.teammates,
+            "AI-BUSINESS-INPUT": update.ai_input,
+            "AI-BUSINESS-OUTPUT": update.ai_output,
+            "BUSINESS-UPDATE": update.business_update
+        }
+        updates_data.append(update_data)
+    df = pd.DataFrame(updates_data)
 
     temp_dir = tempfile.mkdtemp()
 
@@ -253,38 +285,50 @@ def download_xlsx():
 @login_required
 @admin_view.route("/send", methods=["GET","POST"])
 def send():
-    recevier_list=['yrishu71@gmail.com']
+    recevier_list=['terabaapm1231@gmail.com']
     # Get the portfolio_details from the session and attach it as a DOCX file
     fromdate = session.get('fromdate', '')
     todate = session.get('todate', '')
     service = session.get('service', '')
-    portfolio = session.get('portfolio', '')
+    portfolio_name = session.get('project', '')
 
-    if portfolio == 'all':
+    if portfolio_name == 'all':  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
+        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
+        portfolio_id = portfolio.id
+        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
+        
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio.like(portfolio),
-            BusinessUpdates.service.like(service)
+            BusinessUpdates.portfolio_id == session['portfolio_id'],
+            BusinessUpdates.service.like(session['service'])
         ).all()
 
-    df = pd.DataFrame([{
-        'PORTFOLIO': update.portfolio,
-        'AI-INPUT': update.ai_input,
-        'AI-OUTPUT': update.ai_output,
-        'BUSINESS-UPDATE': update.business_update
-    } for update in updates])
-    
+
+    updates_data = []
+    for update in updates:
+        update_data = {
+            "Date": update.date,
+            "Service": update.service,
+            "AI_Input": update.ai_input,
+            "Business_Update": update.business_update,
+            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name
+            # Add other columns as needed
+        }
+        updates_data.append(update_data)
+
+    # Convert the list of dictionaries to a pandas DataFrame
+    df = pd.DataFrame(updates_data)
     doc = Document()
     doc.add_heading('Project Updates', level=0)
 
     list1 = []
 
-    for name in df["PORTFOLIO"]:
+    for name in df["Portfolio"]:
         if name in list1:
             continue
         else:
@@ -295,9 +339,9 @@ def send():
         finalstr = finalstr +"\n""\n"+ x
         doc.add_heading(x, level=2)
         for index, row in df.iterrows():
-            if x == row["PORTFOLIO"]:
+            if x == row["Portfolio"]:
                 detail = f"""
-        {row['AI-INPUT']} - {row['BUSINESS-UPDATE']}
+        {row['AI_Input']} - {row['Business_Update']}
 
     """
                 doc.add_paragraph(detail)
@@ -328,4 +372,5 @@ def send():
             smtp.send_message(msg)
 
     flash(f"Updates sent successfully",category='success')
+
     return redirect(url_for("auth.logout"))
