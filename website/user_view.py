@@ -54,7 +54,7 @@ def process_form():
     user_input = request.form['user_input']
     user_output = request.form['user_output']
     kpi = request.form['kpi']
-    portfolio = request.form['portfolio']
+    # portfolio = request.form['portfolio']
     project = request.form['project']
     service = request.form['services']
     progress = request.form['progress']
