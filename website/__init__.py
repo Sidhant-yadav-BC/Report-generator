@@ -22,6 +22,7 @@ def create_app():
     from .admin_view import admin_view
     from .auth import auth
     from .models import Users
+    from .db_view import db_view
     
     
     login_manager = LoginManager()
@@ -35,6 +36,7 @@ def create_app():
     app.register_blueprint(user_view, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
     app.register_blueprint(admin_view, url_prefix='/')
+    app.register_blueprint(db_view, url_prefix='/')
     
     create_database(app)
 

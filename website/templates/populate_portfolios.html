@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Populate Portfolios{% endblock title %}
+
+{% block body %}
+   
+    <div class="container">
+        <form method="post" action="{{ url_for('db_view.populate_portfolios') }}">
+            <h3>Projects</h3>
+            <label for="portfolio">Portfolio:</label>
+            <select id="portfolio" name="portfolio" required>
+                <option value="Agilisys">Agilisys</option>
+                <option value="Accelerate People">Accelerate People</option>
+                <option value="Avado">Avado</option>
+                <option value="Baby Zone">Baby Zone</option>
+                <option value="BCI Capital">BCI Capital</option>
+                <option value="BC Lead Generation">BC Lead Generation</option>
+                <option value="BC UK">BC UK</option>
+                <option value="Bright Owl">Bright Owl</option>
+                <option value="Coraaj">Coraaj</option>
+                <option value="Delfy">Delfy</option>
+                <option value="English Score">English Score</option>
+                <option value="Fospha">Fospha</option>
+                <option value="Generative AI">Generative AI</option>
+                <option value="Growth Mindset">Growth Mindset</option>
+                <option value="Heme Health">Heme Health</option>
+                <option value="Hive Learning">Hive Learning</option>
+                <option value="Instrumental">Instrumental</option>
+                <option value="IntentPro">IntentPro</option>
+                <option value="Internal Projects">Internal Projects</option>
+                <option value="Koodoo">Koodoo</option>
+                <option value="Kloo">Kloo</option>
+                <option value="Oakbrook Finance">Oakbrook Finance</option>
+                <option value="Red Team">Red Team</option>
+                <option value="Rajasthan Royals">Rajasthan Royals</option>
+                <option value="Researcher">Researcher</option>
+                <option value="Salary Finance">Salary Finance</option>
+                <option value="Scoresy">Scoresy</option>
+            </select><br><br>
+            
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    
+{% endblock body %}

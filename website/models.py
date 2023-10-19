@@ -26,7 +26,6 @@ class BusinessUpdates(db.Model):
 class Portfolios(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False, unique = True)
     name = db.Column(db.String(100), nullable = False)
-    description = db.Column(db.String())
     
     business_updates = db.relationship('BusinessUpdates')
     projects = db.relationship('Projects')
