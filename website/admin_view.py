@@ -1,6 +1,7 @@
 from flask import Blueprint,redirect, url_for, flash,render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates
+from .models import Users
 import smtplib
 from email.message import EmailMessage
 from docx import Document
@@ -20,6 +21,58 @@ def admin_landing():
     if not current_user.is_authenticated:
         return redirect(url_for('auth.login'))  # Redirect to the login page
     return render_template('admin_landing.html')
+
+@login_required
+@admin_view.route('/excel', methods=['POST'])
+def excel():
+    todate = request.form['toDate']
+    session['todate'] = todate
+    fromdate = request.form['fromDate']
+    session['fromdate'] = fromdate
+    portfolio = request.form['project']
+    session['portfolio'] = portfolio
+    service = request.form['services']
+    session['service'] = service
+
+    query = ''
+    df = ''
+
+    if portfolio == 'all':
+        updates = BusinessUpdates.query.filter(
+            BusinessUpdates.date.between(fromdate, todate),
+            BusinessUpdates.service.like(service)
+        ).all()
+    else:
+        updates = BusinessUpdates.query.filter(
+            BusinessUpdates.date.between(fromdate, todate),
+            BusinessUpdates.portfolio.like(portfolio),
+            BusinessUpdates.service.like(service)
+        ).all()
+
+    updates_data = []
+    for update in updates:
+        update_data = {
+            "DATE": update.date,
+            "USERNAME": update.user.username,
+            "USER_INPUT": update.user_input,
+            "USER_OUTPUT": update.user_output,
+            "SERVICE": update.service,
+            # "PORTFOLIO": update.portfolio.name,
+            "PROGRESS": update.progress,
+            "TEAMMATES": update.teammates,
+            "AI-BUSINESS-INPUT": update.ai_input,
+            "AI-BUSINESS-OUTPUT": update.ai_output,
+            "BUSINESS-UPDATE": update.business_update
+        }
+        updates_data.append(update_data)
+
+    # Convert the list of dictionaries to a pandas DataFrame
+    df = pd.DataFrame(updates_data)
+
+    table_html = df.to_html(classes='table table-bordered table-striped', index=False)
+
+    return render_template('report.html', table_html=table_html)
+
 
 @login_required
 @admin_view.route('/portfolio_details', methods=['GET', 'POST'])
@@ -47,7 +100,7 @@ def portfolio_details():
     for update in updates:
         update_data = {
             "Date": update.date,
-            "Portfolio": update.portfolio,
+            # "Portfolio": update.portfolio,
             "Service": update.service,
             "AI_Input": update.ai_input,
             "AI_Output": update.ai_output
@@ -159,50 +212,6 @@ def download_portfolio_docx():
     )
 
 
-@login_required
-@admin_view.route('/excel', methods=['POST'])
-def excel():
-    todate = request.form['toDate']
-    session['todate'] = todate
-    fromdate = request.form['fromDate']
-    session['fromdate'] = fromdate
-    portfolio = request.form['project']
-    session['portfolio'] = portfolio
-    service = request.form['services']
-    session['service'] = service
-
-    query = ''
-    df = ''
-
-    if portfolio == 'all':
-        updates = BusinessUpdates.query.filter(
-            BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(service)
-        ).all()
-    else:
-        updates = BusinessUpdates.query.filter(
-            BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.portfolio.like(portfolio),
-            BusinessUpdates.service.like(service)
-        ).all()
-
-    df = pd.DataFrame([{
-        'DATE': update.date,
-        'USER': update.username,
-        'USER_INPUT': update.user_input,
-        'USER_OUTPUT': update.user_output,
-        'SERVICE': update.service,
-        'PORTFOLIO': update.portfolio,
-        'PROGRESS': update.progress,
-        'TEAMMATES': update.teammates,
-        'AI-BUSINESS-INPUT': update.ai_input,
-        'AI-BUSINESS-OUTPUT': update.ai_output,
-        'BUSINESS-UPDATE': update.business_update
-    } for update in updates])
-
-    table_html = df.to_html(classes='table table-bordered table-striped', index=False)
-
-    return render_template('report.html', table_html=table_html)
 
 @login_required
 @admin_view.route('/download_xlsx', methods=['GET', 'POST'])

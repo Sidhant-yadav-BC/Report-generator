@@ -3,7 +3,7 @@ import os
 import openai
 import dotenv
 import re
-from .models import BusinessUpdates, Projects, Portfolios
+from .models import BusinessUpdates
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
@@ -59,17 +59,17 @@ def process_form():
     service = request.form['services']
     progress = request.form['progress']
     team = request.form['team']
-    blockers = request.form['blockers']
-    
 
     # Use the OpenAI API to generate a response based on user input
     prompts = [
+
         {
             'role': 'system',
             'content': """
             You are a professional business report generator. Your task is to create a detailed business report in the following format, which includes sections for input, output, and a business update. Maintain a high level of professionalism in the language and presentation of the report.
 
             Task done by user is : {user_input}
+
             Please adhere to the specific format provided below:
 
             INPUT:
@@ -79,13 +79,18 @@ def process_form():
             Generate a concise one-line response that focuses on the outcome of the work done this week. Highlight aspects such as efficiency gains, reduced efforts, time savings, or other relevant results.
 
             BUSINESS UPDATE:
-            Generate a succinct one-line statement that focuses on the updates related to the business from the generated output. Discuss how efficiency is improved, efforts are reduced, or any other pertinent updates that align with the organization's goals and objectives.
+            Generate a succinct one-line statement that focuses on the updates related to the business from the generated output. Discuss pertinent updates that align with the organization's goals and objectives.
+
             """
         },
+
         {
+
             'role': 'user',
-            'content': f"input from user {user_input} and output from user {user_output} improve it in a business representable way "
+            'content': f"input from user {user_input}, output from user {user_output}, kpi of the project {kpi} and project detail {project_details} improve it in a business representable way "
+
         }
+
     ]
 
     # Use the OpenAI API to generate a response
@@ -110,10 +115,7 @@ def process_form():
     session['team'] = team
     session['user_input'] = user_input
     session['user_output'] = user_output
-    session['project']= project
-    session['blockers'] = blockers
-    session['kpi'] = kpi
-    session['blockers'] = blockers
+
     # Redirect to the submission editing page
     return redirect(url_for('user_view.submission_output_editable'))
 
@@ -144,12 +146,13 @@ def submission_output_editable():
     date = session.get('selected_date', '')
     progress = session.get('progress', '')
     team = session.get('team', '')
+    kpi = session.get('kpi', '')
+    blocker = session.get('blocker', '')
 
 
     return render_template('submission_output_editable.html', submission=session.get('submission', ''),
-                            input=input_section, output=output_section,
-                           business_update=business_update_section  ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output, 
-                           kpi = session.get('kpi', ''), blocker = session.get('blockers', ''))
+                           username=session.get('username', ''), input=input_section, output=output_section,
+                           business_update=business_update_section , gpt_rep = gpt_rep ,team = team ,progress=progress,date=date, portfolio=portfolio, service=service , user_input=user_input , user_output=user_output)
 
 # Define the route for updating the submission
 @login_required
@@ -162,13 +165,10 @@ def update_submission():
     output_data = request.form.get('output')
     business_update = request.form.get('bu')
     
-    
     # Assuming the following form fields are present: 'input', 'output', 'bu', 'portfolio', 'service' 
     date_str = session.get('selected_date', '')
     date = datetime.strptime(date_str, '%Y-%m-%d') #refactoring data fromat as SQLite DateTime type only accepts Python datetime
     teammates = session.get('team', '')
-    db_obj_project = Projects.query.filter_by(name=session.get('project')).first()
-    db_obj_portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
 
     
 
@@ -182,14 +182,11 @@ def update_submission():
             blockers = session.get('blocker', ''),
             kpi = session.get('kpi', ''),
             service=service,
-            project_id = db_obj_project.id,
-            portfolio_id = db_obj_portfolio.id,
+            portfolio=portfolio,
             teammates=teammates,
             progress=session['progress'],
             ai_input = input_data,
             ai_output = output_data,
-            business_update=business_update,
-           
         )
         
 
@@ -207,6 +204,7 @@ def update_submission():
     except SQLAlchemyError as e:
             # Handle exceptions (print, log, or handle appropriately)
             flash("Update failed",category='error')
+            print(e)
             db.session.rollback()
 
             # You might want to add a flash message or redirect to an error page

@@ -1,10 +1,10 @@
 from . import db
 from flask_login import UserMixin
-
+from sqlalchemy.orm import relationship
 
 
 class BusinessUpdates(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer ,primary_key=True)
     date = db.Column(db.DateTime(timezone=False))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     user_input = db.Column(db.String(10000))
@@ -22,7 +22,10 @@ class BusinessUpdates(db.Model):
     ai_input = db.Column(db.String(10000))
     ai_output = db.Column(db.String(10000))
     business_update = db.Column(db.String(10000))
-    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user = relationship('Users')
+    portfolio = relationship('Portfolios')
+
 class Portfolios(db.Model):
     id = db.Column(db.Integer, primary_key = True, nullable = False, unique = True)
     name = db.Column(db.String(100), nullable = False)

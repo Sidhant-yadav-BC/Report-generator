@@ -28,6 +28,15 @@ p {
     text-align: center;
 }
 
+.logout form{
+    text-align: center;
+     /* Add some right margin for spacing */
+}
+.logout button {
+    border-radius: 5px;
+    /* Add any additional styling for the button */
+}
+
 /* Common styles for input groups */
 
 .input-group{
@@ -97,6 +106,7 @@ form {
     max-width: 1200px;
     margin: 0 auto;
 }
+
 
 label {
     font-weight: bold;

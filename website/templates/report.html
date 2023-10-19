@@ -10,6 +10,12 @@
 {% block body%}
 <div class="container mt-5">
     <h2>Data Table</h2>
+    <form action="{{ url_for('auth.logout') }}" method="GET">
+        <div class="logout">
+            <button type="submit" class="back-button">Logout</button>
+        </div>
+        
+    </form>
     <div class="table-container">
         {{ table_html | safe }}
         
@@ -17,6 +23,7 @@
         
         
     </div>
+
     <form action="{{url_for('admin_view.download_xlsx')}}" method="GET">
         <button type="submit"  id='excl_button' class="btn btn-primary">Download Excel</button>
     </form>

@@ -9,6 +9,12 @@
 {% block body%}
     <div class="container">
         <h1></h1>
+        <form action="{{ url_for('auth.logout') }}" method="GET">
+            <div class="logout">
+                <button type="submit">Logout</button>
+            </div>
+            
+        </form>
         <div class="cont">
             <form action="{{ url_for('admin_view.excel') }}" method="POST">
                 <div class="input-group">
