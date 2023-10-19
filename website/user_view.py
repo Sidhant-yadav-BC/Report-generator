@@ -3,7 +3,7 @@ import os
 import openai
 import dotenv
 import re
-from .models import BusinessUpdates
+from .models import BusinessUpdates, Projects
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
@@ -42,7 +42,8 @@ def user_form():
         return redirect(url_for('auth.login'))  # Redirect to the login page
     else:
         if current_user.role == 'user':
-            return render_template('user_form.html', username=current_user.username)
+            project_names = db.session.query(Projects.name).all()
+            return render_template('user_form.html', project_names = project_names)
         else:
             return redirect(url_for("admin_view.admin_landing"))
 
@@ -54,8 +55,12 @@ def process_form():
     user_input = request.form['user_input']
     user_output = request.form['user_output']
     kpi = request.form['kpi']
-    # portfolio = request.form['portfolio']
-    project = request.form['project']
+    project_name = request.form['project']
+    project = Projects.query.filter_by(name = project_name).first()
+    
+    portfolio_id = project.portfolio_id
+    project_description = project.description
+    
     service = request.form['services']
     progress = request.form['progress']
     team = request.form['team']
@@ -87,7 +92,7 @@ def process_form():
         {
 
             'role': 'user',
-            'content': f"input from user {user_input}, output from user {user_output}, kpi of the project {kpi} and project detail {project_details} improve it in a business representable way "
+            'content': f"input from user {user_input}, output from user {user_output}, kpi of the project {kpi} and project detail {project_description} improve it in a business representable way "
 
         }
 
