@@ -16,12 +16,9 @@
 
         <label for="username">Project</label>
         <select type="text" id="project" name="project" required>
-            <option value="hrbot">HR-Bot</option>
-            <option value="coachcopilot">Coach Co-Pilot</option>
-            <option value="dnanextgen">DNA NextGen</option>
-            <option value="sparkbot">sparkbot</option>
-            <option value="socialcareplangenerator">Social Care Plan Generator</option>
-            <option value="assessmentcopilot">Assessment Co-Pilot</option>
+            {% for item in project_names %}
+            <option value="{{ item[0] }}">{{ item[0] }}</option>
+            {% endfor %}
             <br><br>    
         </select>
         <div class="input-group">
