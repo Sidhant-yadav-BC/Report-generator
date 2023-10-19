@@ -91,10 +91,6 @@ def portfolio_details():
         ).all()
     else:
         
-        portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
-        portfolio_id = portfolio.id
-        session['portfolio_id'] = portfolio_id  # Store only the portfolio_id in the session
-        
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
             BusinessUpdates.portfolio_id == session['portfolio_id'],
@@ -107,7 +103,8 @@ def portfolio_details():
             "Date": update.date,
             "Service": update.service,
             "AI_Input": update.ai_input,
-            "AI_Output": update.ai_output
+            "AI_Output": update.ai_output,
+            "PORTFOLIO": (Portfolios.query.filter_by(id = session['portfolio_id'])).name
             # Add other columns as needed
         }
         updates_data.append(update_data)
