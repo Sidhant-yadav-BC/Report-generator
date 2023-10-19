@@ -192,7 +192,7 @@ def update_submission():
             blockers = session.get('blocker', ''),
             kpi = session.get('kpi', ''),
             service=service,
-            portfolio_id=session.get('portfolio_id', '')
+            portfolio_id=session.get('portfolio_id', ''),
             teammates=teammates,
             progress=session['progress'],
             ai_input = input_data,
