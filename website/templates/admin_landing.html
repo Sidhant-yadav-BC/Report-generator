@@ -10,9 +10,9 @@
     <div class="container">
         <h1></h1>
         <form action="{{ url_for('auth.logout') }}" method="GET">
-            <div class="logout">
-                <button type="submit">Logout</button>
-            </div>
+
+             <button class='logout-button' type="submit">Logout</button>
+        
             
         </form>
         <div class="cont">
@@ -22,7 +22,6 @@
                     <select id="project" name="project" required>
                         <option value="all">All</option>
                         <option value="Agilisys">Agilisys</option>
-                        <!-- Add more options here -->
                         <option value="Accelerate People">Accelerate People</option>
                         <option value="Avado">Avado</option>
                         <option value="Baby Zone">Baby Zone</option>

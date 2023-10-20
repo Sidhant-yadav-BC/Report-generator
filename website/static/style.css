@@ -81,7 +81,7 @@ form {
 
     max-width: 400px;
 
-    max-height: 1200px;
+    max-height: 1800px;
 
     margin: 0 auto;
 
@@ -125,7 +125,7 @@ form#report {
     margin: 20px;
 
     max-width: 400px;
-    max-height: 900px;
+    max-height: 1800px;
 
     margin: 0 auto;
 
@@ -231,7 +231,7 @@ textarea#input1 {
 
 }
 textarea#kpi,
-textarea#blocker,
+textarea#blockers,
 textarea#output1 {
 
     width: 310px;

@@ -28,12 +28,20 @@ p {
     text-align: center;
 }
 
-.logout form{
-    text-align: center;
+.container form{
+    text-align: right;
      /* Add some right margin for spacing */
 }
-.logout button {
+.logout-button  {
+    padding: 5px 10px;
+    background-color: #333;
+    color: #fff;
+    border: none;
     border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
     /* Add any additional styling for the button */
 }
 
@@ -95,7 +103,7 @@ h1 {
     margin-bottom: 20px;
 }
 
-form {
+.cont form {
     background-color: #fff;
     padding: 30px;
     border-radius: 5px;
