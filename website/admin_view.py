@@ -1,7 +1,7 @@
 from flask import Blueprint,redirect, url_for, flash,render_template, request, session, render_template_string, send_file
 from flask_login import login_required, current_user
 from .models import BusinessUpdates
-from .models import Users, Portfolios
+from .models import Users, Portfolios , Projects
 import smtplib
 from email.message import EmailMessage
 from docx import Document
@@ -9,6 +9,7 @@ import io
 import pandas as pd
 import tempfile
 import os
+from docx.shared import RGBColor
 
 admin_view = Blueprint('admin_view', __name__)
 
@@ -63,6 +64,7 @@ def excel():
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
             "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
+            "PROJECT":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name,
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -111,7 +113,8 @@ def portfolio_details():
             "Service": update.service,
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
-            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name
+            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
+            "Project":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -138,7 +141,9 @@ def portfolio_details():
         finalstr = finalstr + "\n""\n" + x+ "\n"
         for index, row in df.iterrows():
             if x == row["Portfolio"]:
+                date_ = str(row['Date'])
                 finalstr += f"""
+        {row['Project']} - ({date_[0:10]})
         {row['AI_Input']} - {row['Business_Update']}
     """
 
@@ -185,14 +190,15 @@ def download_portfolio_docx():
             "Service": update.service,
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
-            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name
+            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
+            "Project":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name
             # Add other columns as needed
         }
         updates_data.append(update_data)
 
     # Convert the list of dictionaries to a pandas DataFrame
     df = pd.DataFrame(updates_data)
-
+    print(df)
     temp_doc = Document()
     temp_doc.add_heading('Project Updates', level=0)
 
@@ -212,8 +218,10 @@ def download_portfolio_docx():
             if x == row["Portfolio"]:
                 detail = f"""
         {row['AI_Input']} - {row['Business_Update']}
-
-    """
+    """         
+                da_te = str(row['Date'])
+                project = f"{row['Project']} - ({da_te[0:10]})"
+                temp_doc.add_heading(project, level=4 )
                 temp_doc.add_paragraph(detail)
             
     temp_doc_file = io.BytesIO()
@@ -265,6 +273,7 @@ def download_xlsx():
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
             "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
+            "PROJECT": (Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name,
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -316,7 +325,8 @@ def send():
             "Service": update.service,
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
-            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name
+            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
+            "Project":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -342,8 +352,10 @@ def send():
             if x == row["Portfolio"]:
                 detail = f"""
         {row['AI_Input']} - {row['Business_Update']}
-
-    """
+    """         
+                da_te = str(row['Date'])
+                project = f"{row['Project']} - ({da_te[0:10]})"
+                doc.add_heading(project, level=4 )
                 doc.add_paragraph(detail)
 
     temp_docx_file = io.BytesIO()
