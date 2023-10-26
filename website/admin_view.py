@@ -6,6 +6,7 @@ import smtplib
 from email.message import EmailMessage
 from docx import Document
 import io
+import re
 import pandas as pd
 import tempfile
 import os
@@ -50,6 +51,7 @@ def excel():
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
             BusinessUpdates.portfolio_id == session['portfolio_id'],
+            BusinessUpdates.portfolio_id == session['portfolio_id'],
             BusinessUpdates.service.like(session['service'])
         ).all()
 
@@ -64,7 +66,7 @@ def excel():
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
             "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "PROJECT":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name,
+            "PROJECT":(Projects.query.filter_by(id = update.project_id).first().name),
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -114,7 +116,7 @@ def portfolio_details():
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
             "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "Project":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name
+            "Project":(Projects.query.filter_by(id = update.project_id).first().name)
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -127,7 +129,7 @@ def portfolio_details():
         return redirect(url_for("admin_view.admin_landing"))
 
     portfolio_details = ""
- 
+    
 
     list1 = []
     for name in df["Portfolio"]:
@@ -146,6 +148,7 @@ def portfolio_details():
         {row['Project']} - ({date_[0:10]})
         {row['AI_Input']} - {row['Business_Update']}
     """
+    
 
     return render_template_string(render_template('portfolio_details.html', portfolio_details=finalstr))
 
@@ -165,6 +168,7 @@ def download_portfolio_docx():
     todate = session.get('todate', '')
     service = session.get('service', '')
     portfolio_name = session.get('project', '')
+    portfolio_details = session.get('portfolio-textarea' , '')
 
     if portfolio_name == 'all':  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
@@ -191,7 +195,7 @@ def download_portfolio_docx():
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
             "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "Project":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name
+            "Project":(Projects.query.filter_by(id = update.project_id).first().name)
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -201,28 +205,36 @@ def download_portfolio_docx():
     print(df)
     temp_doc = Document()
     temp_doc.add_heading('Project Updates', level=0)
+    text = portfolio_details
+    # list1 = []
 
-    list1 = []
-
-    for name in df["Portfolio"]:
-        if name in list1:
-            continue
-        else:
-            list1.append(name)
+    # for name in df["Portfolio"]:
+    #     if name in list1:
+    #         continue
+    #     else:
+    #         list1.append(name)
             
-    finalstr = ""
-    for x in list1:
-        finalstr = finalstr +"\n""\n"+ x
-        temp_doc.add_heading(x, level=2)
-        for index, row in df.iterrows():
-            if x == row["Portfolio"]:
-                detail = f"""
-        {row['AI_Input']} - {row['Business_Update']}
-    """         
-                da_te = str(row['Date'])
-                project = f"{row['Project']} - ({da_te[0:10]})"
-                temp_doc.add_heading(project, level=4 )
-                temp_doc.add_paragraph(detail)
+    # finalstr = ""
+    # for x in list1:
+    #     finalstr = finalstr +"\n""\n"+ x
+    #     temp_doc.add_heading(x, level=2)
+    #     for index, row in df.iterrows():
+    #         if x == row["Portfolio"]:
+    #             detail = f"""
+    #     {row['AI_Input']} - {row['Business_Update']}
+    # """         
+    #             da_te = str(row['Date'])
+    #             project = f"{row['Project']} - ({da_te[0:10]})"
+    #             temp_doc.add_heading(project, level=4 )
+    #             temp_doc.add_paragraph(detail)
+
+    sections = re.split(r'(\w+\s*\w*)\n', text)
+    headings = re.findall(r'(\w+\s*\w*)\n', text)
+    # Extract and print only the content
+    for heading, content in zip(headings, sections[2::2]):                  
+        temp_doc.add_heading(f'{heading.strip()}'+ '\n', level=2)
+        temp_doc.add_paragraph(content)
+
             
     temp_doc_file = io.BytesIO()
     temp_doc.save(temp_doc_file)
@@ -273,7 +285,7 @@ def download_xlsx():
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
             "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "PROJECT": (Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name,
+            "PROJECT": (Projects.query.filter_by(id = update.project_id).first().name),
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -326,7 +338,7 @@ def send():
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
             "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "Project":(Projects.query.filter_by(portfolio_id = update.portfolio_id).first()).name
+            "Project":(Projects.query.filter_by(id = update.project_id).first().name)
             # Add other columns as needed
         }
         updates_data.append(update_data)

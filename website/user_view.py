@@ -59,6 +59,7 @@ def process_form():
     project = Projects.query.filter_by(name = project_name).first()
     
     portfolio_id = project.portfolio_id
+    project_id = project.id
     project_description = project.description
     
     service = request.form['services']
@@ -123,6 +124,7 @@ def process_form():
     session['blocker'] = blocker
     session['project_name'] = project_name
     session['portfolio_id'] = portfolio_id
+    session['project_id'] = project_id
     
 
     # Redirect to the submission editing page
@@ -174,10 +176,11 @@ def update_submission():
     input_data = request.form.get('input')
     output_data = request.form.get('output')
     business_update = request.form.get('bu')
-    
+    project_name = session.get('project_name', '')
+    project_id = session.get('project_id', '')
     # Assuming the following form fields are present: 'input', 'output', 'bu', 'portfolio', 'service' 
     date_str = session.get('selected_date', '')
-    date = datetime.strptime(date_str, '%Y-%m-%d') #refactoring data fromat as SQLite DateTime type only accepts Python datetime
+    date = datetime.strptime(date_str, '%Y-%m-%d')  #refactoring data fromat as SQLite DateTime type only accepts Python datetime
     teammates = session.get('team', '')
 
     
@@ -197,7 +200,8 @@ def update_submission():
             progress=session['progress'],
             ai_input = input_data,
             ai_output = output_data,
-            business_update= business_update
+            business_update= business_update,
+            project_id = project_id
         )
         
 
