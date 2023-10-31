@@ -50,7 +50,7 @@ class Users(db.Model, UserMixin):
     
     # @property
     # def id(self):
-    #     return self.id
+    # return self.id
     
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50), nullable=False, default='user', server_default='user')

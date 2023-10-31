@@ -32,16 +32,16 @@ def excel():
     session['fromdate'] = fromdate
     portfolio_name = request.form['project']
     session['project'] = portfolio_name
-
-    session['service'] = request.form['services']
+    service  = request.form['services']
+    session['service'] = service
+    
 
     query = ''
     df = ''
 
-    if portfolio_name == 'all':  # Check against the name, not the entire object
+    if portfolio_name == 'all' or service == "all":  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
         portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
@@ -55,18 +55,20 @@ def excel():
             BusinessUpdates.service.like(session['service'])
         ).all()
 
-
+    
     
     updates_data = []
     for update in updates:
+        portfolio = Portfolios.query.filter_by(id=update.portfolio_id).first()
+        project = Projects.query.filter_by(id=update.project_id).first()    
         update_data = {
             "DATE": update.date,
             "USERNAME": update.user.username,
             "USER_INPUT": update.user_input,
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
-            "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "PROJECT":(Projects.query.filter_by(id = update.project_id).first().name),
+            "PORTFOLIO": portfolio.name if portfolio else "N/A",
+            "PROJECT":project.name if project else "N/A",
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -91,10 +93,10 @@ def portfolio_details():
     service = session.get('service', '')
     portfolio_name = session.get('project', '')
     
-    if portfolio_name == 'all':  # Check against the name, not the entire object
+    if portfolio_name == 'all' or service == "all" :  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(session['service'])
+            
         ).all()
     else:
         portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
@@ -110,13 +112,16 @@ def portfolio_details():
 
     updates_data = []
     for update in updates:
+        portfolio = Portfolios.query.filter_by(id=update.portfolio_id).first()
+        project = Projects.query.filter_by(id=update.project_id).first() 
         update_data = {
+
             "Date": update.date,
             "Service": update.service,
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
-            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "Project":(Projects.query.filter_by(id = update.project_id).first().name)
+            "Portfolio": portfolio.name if portfolio else "N/A",
+            "Project":project.name if project else "N/A",
             # Add other columns as needed
         }
         updates_data.append(update_data)
@@ -158,6 +163,7 @@ def portfolio_details():
 def update_portfolio_details():
     portfolio_details = request.form.get('portfolio-textarea')
     session["portfolio-textarea"] = portfolio_details
+    
 
     return render_template_string(render_template('updated_portfolio_details.html', portfolio_details=portfolio_details))
 
@@ -170,10 +176,10 @@ def download_portfolio_docx():
     portfolio_name = session.get('project', '')
     portfolio_details = session.get('portfolio-textarea' , '')
 
-    if portfolio_name == 'all':  # Check against the name, not the entire object
+    if portfolio_name == 'all' or service == "all":  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(session['service'])
+           
         ).all()
     else:
         portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
@@ -189,20 +195,21 @@ def download_portfolio_docx():
 
     updates_data = []
     for update in updates:
+        portfolio = Portfolios.query.filter_by(id=update.portfolio_id).first()
+        project = Projects.query.filter_by(id=update.project_id).first() 
         update_data = {
             "Date": update.date,
             "Service": update.service,
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
-            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "Project":(Projects.query.filter_by(id = update.project_id).first().name)
+            "Portfolio": portfolio.name if portfolio else "N/A",
+            "Project":project.name if project else "N/A",
             # Add other columns as needed
         }
         updates_data.append(update_data)
 
     # Convert the list of dictionaries to a pandas DataFrame
     df = pd.DataFrame(updates_data)
-    print(df)
     temp_doc = Document()
     temp_doc.add_heading('Project Updates', level=0)
     text = portfolio_details
@@ -227,7 +234,7 @@ def download_portfolio_docx():
     #             project = f"{row['Project']} - ({da_te[0:10]})"
     #             temp_doc.add_heading(project, level=4 )
     #             temp_doc.add_paragraph(detail)
-
+    print(text)
     sections = re.split(r'(\w+\s*\w*)\n', text)
     headings = re.findall(r'(\w+\s*\w*)\n', text)
     # Extract and print only the content
@@ -258,10 +265,9 @@ def download_xlsx():
     portfolio_name = session.get('project', '')
 
     df = ''
-    if portfolio_name == 'all':  # Check against the name, not the entire object
+    if portfolio_name == 'all' or service == "all":  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
             BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(session['service'])
         ).all()
     else:
         portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
@@ -278,14 +284,16 @@ def download_xlsx():
     
     updates_data = []
     for update in updates:
+        portfolio = Portfolios.query.filter_by(id=update.portfolio_id).first()
+        project = Projects.query.filter_by(id=update.project_id).first() 
         update_data = {
             "DATE": update.date,
             "USERNAME": update.user.username,
             "USER_INPUT": update.user_input,
             "USER_OUTPUT": update.user_output,
             "SERVICE": update.service,
-            "PORTFOLIO": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "PROJECT": (Projects.query.filter_by(id = update.project_id).first().name),
+            "PORTFOLIO": portfolio.name if portfolio else "N/A",
+            "PROJECT":project.name if project else "N/A",
             "PROGRESS": update.progress,
             "TEAMMATES": update.teammates,
             "AI-BUSINESS-INPUT": update.ai_input,
@@ -313,10 +321,9 @@ def send():
     service = session.get('service', '')
     portfolio_name = session.get('project', '')
 
-    if portfolio_name == 'all':  # Check against the name, not the entire object
+    if portfolio_name == 'all' or service == "all":  # Check against the name, not the entire object
         updates = BusinessUpdates.query.filter(
-            BusinessUpdates.date.between(fromdate, todate),
-            BusinessUpdates.service.like(session['service'])
+            BusinessUpdates.date.between(fromdate, todate)           
         ).all()
     else:
         portfolio = Portfolios.query.filter_by(name=portfolio_name).first()
@@ -332,13 +339,15 @@ def send():
 
     updates_data = []
     for update in updates:
+        portfolio = Portfolios.query.filter_by(id=update.portfolio_id).first()
+        project = Projects.query.filter_by(id=update.project_id).first() 
         update_data = {
             "Date": update.date,
             "Service": update.service,
             "AI_Input": update.ai_input,
             "Business_Update": update.business_update,
-            "Portfolio": (Portfolios.query.filter_by(id = update.portfolio_id).first()).name,
-            "Project":(Projects.query.filter_by(id = update.project_id).first().name)
+            "Portfolio": portfolio.name if portfolio else "N/A",
+            "Project":project.name if project else "N/A",
             # Add other columns as needed
         }
         updates_data.append(update_data)

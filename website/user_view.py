@@ -74,7 +74,12 @@ def process_form():
             'content': """
             You are a professional business report generator. Your task is to create a detailed business report in the following format, which includes sections for input, output, and a business update. Maintain a high level of professionalism in the language and presentation of the report.
 
-            Task done by user is : {user_input}
+            Task done by user is : {user_input} 
+            Output from user {user_output},
+            kpi of the project {kpi},
+            Project detail {project_description} (ALWAYS CONSIDER PROJECT DESCRIPTION)
+
+           
 
             Please adhere to the specific format provided below:
 
@@ -87,13 +92,14 @@ def process_form():
             BUSINESS UPDATE:
             Generate a succinct one-line statement that focuses on the updates related to the business from the generated output. Discuss pertinent updates that align with the organization's goals and objectives.
 
+            
             """
+            
         },
 
         {
-
             'role': 'user',
-            'content': f"input from user {user_input}, output from user {user_output}, kpi of the project {kpi} and project detail {project_description} improve it in a business representable way "
+            'content': f"input from user {user_input}, output from user {user_output}, kpi of the project {kpi} and project detail {project_description} improve it in a business representable way."
 
         }
 
